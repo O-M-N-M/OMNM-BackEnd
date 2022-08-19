@@ -8,7 +8,7 @@ public class OmnmBackendApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(OmnmBackendApplication.class, args);
-		System.out.println("Hello World!");
+		System.out.println("kitae is best");
 	}
 
 }
