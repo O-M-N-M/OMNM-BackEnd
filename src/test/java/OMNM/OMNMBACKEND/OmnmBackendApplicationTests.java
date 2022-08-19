@@ -1,13 +1,13 @@
-package OMNM.OMNMBACKEND;
+// package OMNM.OMNMBACKEND;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+// import org.junit.jupiter.api.Test;
+// import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
-class OmnmBackendApplicationTests {
+// @SpringBootTest
+// class OmnmBackendApplicationTests {
 
-	@Test
-	void contextLoads() {
-	}
+// 	@Test
+// 	void contextLoads() {
+// 	}
 
-}
+// }
