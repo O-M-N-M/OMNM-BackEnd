@@ -38,3 +38,9 @@ out/
 
 ### mysql ###
 src/main/resources/application-mysql.properties
+
+### s3 ###
+src/main/resources/application-s3.properties
+
+### security ###
+src/main/resources/application-security.properties
