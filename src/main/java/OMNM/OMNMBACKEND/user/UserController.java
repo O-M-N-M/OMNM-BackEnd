@@ -38,6 +38,7 @@ public class UserController {
         user.setSchool(userDto.getSchool());
         user.setGender(userDto.getGender());
         user.setProfileUrl(profileUrl);
+        user.setKakaoId(userDto.getKakaoId());
 
         userService.saveUser(user);
         return new ResponseEntity<>("회원가입 완료", HttpStatus.OK);

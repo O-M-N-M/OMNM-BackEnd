@@ -46,4 +46,7 @@ public class User {
 
     @Column(name = "status",nullable = false)
     private Integer status = 1;
+
+    @Column(name = "kakao_Id", nullable = false)
+    private String kakaoId;
 }

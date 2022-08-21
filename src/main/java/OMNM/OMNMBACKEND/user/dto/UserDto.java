@@ -12,4 +12,5 @@ public class UserDto {
     private String school;
     private Integer gender;
     private String profileUrl;
+    private String kakaoId;
 }
