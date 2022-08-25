@@ -28,22 +28,28 @@ public class MyPageController {
 
     @DeleteMapping("")
     public ResponseEntity<String> deleteAccount(){
-        Long userId = 4L;
+        Long userId = 6L;
         myPageService.deleteUserAccount(userId);
         return new ResponseEntity<>("회원 탈퇴 완료", HttpStatus.OK);
     }
 
     @PatchMapping("/resetPassword")
     public ResponseEntity<String> resetPassword(String password){
-        Long userId = 4L;
+        Long userId = 6L;
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
         myPageService.resetUserPassword(userId, bCryptPasswordEncoder.encode(password));
         return new ResponseEntity<>("비밀번호 변경 완료", HttpStatus.OK);
     }
 
+    /**
+     * 프로필 사진
+     * 입실 정보
+     * 카카오톡 아이디
+     * */
+
     @PatchMapping("/changeProfile")
     public ResponseEntity<String> changeProfilePicture(MultipartFile multipartFile){
-        Long userId = 4L;
+        Long userId = 6L;
         String newProfileUrl = awsS3Service.uploadFile(multipartFile);
         myPageService.changeProfileUrl(userId, newProfileUrl);
         return new ResponseEntity<>("프로필 이미지 변경 완료", HttpStatus.OK);
@@ -51,7 +57,7 @@ public class MyPageController {
 
     @GetMapping("")
     public ResponseEntity<MyPageUserDto> viewMyInformation(){
-        Long userId = 4L;
+        Long userId = 6L;
         return new ResponseEntity<>(myPageService.viewUserDto(userId), HttpStatus.OK);
     }
 }

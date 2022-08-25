@@ -7,4 +7,5 @@ import lombok.Setter;
 public class MyPageUserDto {
     private String name;
     private String profileUrl;
+    private Integer dormitory;
 }

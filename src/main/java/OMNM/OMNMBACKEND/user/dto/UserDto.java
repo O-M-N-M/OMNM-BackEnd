@@ -13,4 +13,5 @@ public class UserDto {
     private Integer gender;
     private String profileUrl;
     private String kakaoId;
+    private Integer dormitory;
 }
