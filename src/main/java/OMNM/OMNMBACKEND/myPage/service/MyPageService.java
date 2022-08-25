@@ -26,9 +26,11 @@ public class MyPageService {
         user.ifPresent(value -> value.setPassword(password));
     }
 
-    public void changeProfileUrl(Long userId, String profileUrl){
+    public void changeProfileUrl(Long userId, String profileUrl, String kakaoId, Integer dormitory){
         Optional<User> user = userRepository.findById(userId);
         user.ifPresent(value -> value.setProfileUrl(profileUrl));
+        user.ifPresent(value -> value.setKakaoId(kakaoId));
+        user.ifPresent(value -> value.setDormitory(dormitory));
     }
 
     public MyPageUserDto viewUserDto(Long userId){
@@ -37,8 +39,22 @@ public class MyPageService {
         if(user.isPresent()){
             myPageUserDto.setName(user.get().getName());
             myPageUserDto.setProfileUrl(user.get().getProfileUrl());
+            myPageUserDto.setDormitory(user.get().getDormitory());
+            myPageUserDto.setKakaoId(user.get().getKakaoId());
             return myPageUserDto;
         }
         return null;
+    }
+
+    public void changeMatchingStatus(Long userId){
+        Optional<User> user = userRepository.findById(userId);
+        if(user.isPresent()){
+            if (user.get().getIsMatched() == 0){
+                user.get().setIsMatched(1);
+            }
+            else{
+                user.get().setIsMatched(0);
+            }
+        }
     }
 }
