@@ -49,4 +49,7 @@ public class User {
 
     @Column(name = "kakao_Id", nullable = false)
     private String kakaoId;
+
+    @Column(name = "dormitory",nullable = false)
+    private Integer dormitory;
 }
