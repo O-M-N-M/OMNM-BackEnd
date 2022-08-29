@@ -1,5 +1,7 @@
 package OMNM.OMNMBACKEND.myPage.service;
 
+import OMNM.OMNMBACKEND.connection.domain.Connection;
+import OMNM.OMNMBACKEND.connection.repository.ConnectionRepository;
 import OMNM.OMNMBACKEND.myPage.dto.MyPageUserDto;
 import OMNM.OMNMBACKEND.myPage.dto.ViewUserDto;
 import OMNM.OMNMBACKEND.myPersonality.domain.MyPersonality;
@@ -10,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -19,6 +23,7 @@ public class MyPageService {
 
     private final UserRepository userRepository;
     private final MyPersonalityRepository myPersonalityRepository;
+    private final ConnectionRepository connectionRepository;
 
     public void deleteUserAccount(Long userId){
         Optional<User> user = userRepository.findById(userId);
@@ -97,5 +102,23 @@ public class MyPageService {
                 user.get().setIsMatched(0);
             }
         }
+    }
+
+    public List<List<String>> getConnectionList(Long userId){
+        List<List<String>> applicantList = new ArrayList<>();
+        List<Connection> connectionList = connectionRepository.findAllByToId(userId);
+        if (connectionList.size() == 0){
+            return null;
+        }
+        else{
+            for (Connection connection : connectionList) {
+                Optional<User> user = userRepository.findById(connection.getFromId());
+                String url = "localhost:8080/users/" + connection.getFromId();
+                String kakaoId = user.get().getKakaoId();
+                List<String> tempList = List.of(new String[]{url, kakaoId});
+                applicantList.add(tempList);
+            }
+        }
+        return applicantList;
     }
 }

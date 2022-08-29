@@ -20,6 +20,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
@@ -54,5 +56,11 @@ public class MyPageController {
         Long userId = 9L;
         myPageService.changeMatchingStatus(userId);
         return new ResponseEntity<>("매칭 상태가 변경되었습니다.", HttpStatus.OK);
+    }
+
+    @GetMapping("/connection")
+    public List<List<String>> getConnection(){
+        Long userId = 11L;
+        return myPageService.getConnectionList(userId);
     }
 }
