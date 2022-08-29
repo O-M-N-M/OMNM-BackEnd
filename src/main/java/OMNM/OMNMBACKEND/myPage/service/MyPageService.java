@@ -1,6 +1,9 @@
 package OMNM.OMNMBACKEND.myPage.service;
 
 import OMNM.OMNMBACKEND.myPage.dto.MyPageUserDto;
+import OMNM.OMNMBACKEND.myPage.dto.ViewUserDto;
+import OMNM.OMNMBACKEND.myPersonality.domain.MyPersonality;
+import OMNM.OMNMBACKEND.myPersonality.repository.MyPersonalityRepository;
 import OMNM.OMNMBACKEND.user.domain.User;
 import OMNM.OMNMBACKEND.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +18,7 @@ import java.util.Optional;
 public class MyPageService {
 
     private final UserRepository userRepository;
+    private final MyPersonalityRepository myPersonalityRepository;
 
     public void deleteUserAccount(Long userId){
         Optional<User> user = userRepository.findById(userId);
@@ -31,6 +35,43 @@ public class MyPageService {
         user.ifPresent(value -> value.setProfileUrl(profileUrl));
         user.ifPresent(value -> value.setKakaoId(kakaoId));
         user.ifPresent(value -> value.setDormitory(dormitory));
+    }
+
+    /**
+     * 프로필 사진
+     * 이름
+     * 나이
+     * 입실정보
+     * mbti
+     * 학과
+     * 생활패턴
+     * 수면패턴
+     * 청소빈도
+     * 국적
+     * 군복무
+     * 자기소개
+     * */
+
+    public ViewUserDto setViewUserDto(Long userId){
+        ViewUserDto viewUserDto = new ViewUserDto();
+        Optional<User> user = userRepository.findById(userId);
+        User userEntity = user.get();
+        Long myPersonalityId = userEntity.getMyPersonalityId();
+        Optional<MyPersonality> myPersonality = myPersonalityRepository.findById(myPersonalityId);
+        MyPersonality myPersonalityEntity = myPersonality.get();
+        viewUserDto.setProfileUrl(userEntity.getProfileUrl());
+        viewUserDto.setName(userEntity.getName());
+        viewUserDto.setAge(myPersonalityEntity.getAge());
+        viewUserDto.setDormitory(userEntity.getDormitory());
+        viewUserDto.setMbti(myPersonalityEntity.getMbti());
+        viewUserDto.setDepartment(myPersonalityEntity.getDepartment());
+        viewUserDto.setLifeCycle(myPersonalityEntity.getLifeCycle());
+        viewUserDto.setSleepingPattern(myPersonalityEntity.getSleepingPattern());
+        viewUserDto.setCleaning(myPersonalityEntity.getCleaning());
+        viewUserDto.setNationality(myPersonalityEntity.getNationality());
+        viewUserDto.setArmyService(myPersonalityEntity.getArmyService());
+        viewUserDto.setIntroduction(myPersonalityEntity.getIntroduction());
+        return viewUserDto;
     }
 
     public MyPageUserDto viewUserDto(Long userId){
