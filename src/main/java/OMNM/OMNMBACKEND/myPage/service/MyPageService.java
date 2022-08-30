@@ -113,7 +113,7 @@ public class MyPageService {
         else{
             for (Connection connection : connectionList) {
                 Optional<User> user = userRepository.findById(connection.getFromId());
-                String url = "localhost:8080/users/" + connection.getFromId();
+                String url = "43:200:120:2:8080/users/" + connection.getFromId();
                 String kakaoId = user.get().getKakaoId();
                 List<String> tempList = List.of(new String[]{url, kakaoId});
                 applicantList.add(tempList);
