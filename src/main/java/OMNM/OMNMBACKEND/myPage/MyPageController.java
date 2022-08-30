@@ -1,15 +1,5 @@
 package OMNM.OMNMBACKEND.myPage;
 
-/*
- * 프로필 사진 변경 (PATCH)
- * 비밀번호 재설정 (PATCH)
- * 로그아웃 -> With Spring Security
- * 탈퇴 (DELETE)
- * 내 정보 보기 (GET)
- * */
-
-import OMNM.OMNMBACKEND.myPage.dto.ModifyDto;
-import OMNM.OMNMBACKEND.myPage.dto.MyPageUserDto;
 import OMNM.OMNMBACKEND.myPage.dto.ViewUserDto;
 import OMNM.OMNMBACKEND.myPage.service.MyPageService;
 import OMNM.OMNMBACKEND.s3Image.AwsS3Service;
@@ -18,12 +8,20 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
+/**
+ * 매칭 API
+ * 로그아웃
+ * 회원탈퇴
+ * 나의 정보 보여주기 & 수정
+ * 신청리스트
+ * 비밀번호 재설정
+ * */
+
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/users/{userId}")
 @RequiredArgsConstructor
 public class MyPageController {
 
@@ -31,36 +29,31 @@ public class MyPageController {
     private final AwsS3Service awsS3Service;
 
     @DeleteMapping("")
-    public ResponseEntity<String> deleteAccount(){
-        Long userId = 9L;
+    public ResponseEntity<String> deleteAccount(@PathVariable Long userId){
         myPageService.deleteUserAccount(userId);
         return new ResponseEntity<>("회원 탈퇴 완료", HttpStatus.OK);
     }
 
     @PatchMapping("/resetPassword")
-    public ResponseEntity<String> resetPassword(String password){
-        Long userId = 9L;
+    public ResponseEntity<String> resetPassword(@PathVariable Long userId, String password){
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
         myPageService.resetUserPassword(userId, bCryptPasswordEncoder.encode(password));
         return new ResponseEntity<>("비밀번호 변경 완료", HttpStatus.OK);
     }
 
     @GetMapping("")
-    public ResponseEntity<ViewUserDto> viewMyInformation(){
-        Long userId = 10L;
+    public ResponseEntity<ViewUserDto> viewMyInformation(@PathVariable Long userId){
         return new ResponseEntity<>(myPageService.setViewUserDto(userId), HttpStatus.OK);
     }
 
     @PatchMapping("/matching")
-    public ResponseEntity<String> getMatching(){
-        Long userId = 9L;
+    public ResponseEntity<String> getMatching(@PathVariable Long userId){
         myPageService.changeMatchingStatus(userId);
         return new ResponseEntity<>("매칭 상태가 변경되었습니다.", HttpStatus.OK);
     }
 
     @GetMapping("/connection")
-    public List<List<String>> getConnection(){
-        Long userId = 11L;
+    public List<List<String>> getConnection(@PathVariable Long userId){
         return myPageService.getConnectionList(userId);
     }
 }
