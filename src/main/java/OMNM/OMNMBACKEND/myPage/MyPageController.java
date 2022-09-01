@@ -56,4 +56,13 @@ public class MyPageController {
     public List<List<String>> getConnection(@PathVariable Long userId){
         return myPageService.getConnectionList(userId);
     }
+
+    @DeleteMapping("/connection/{matchingId}")
+    public ResponseEntity<String> deleteConnection(@PathVariable Long matchingId, @PathVariable Long userId){
+        /**
+         * matchingId -> userId로 가는 connection 객체 지워야함
+         * */
+        myPageService.deleteConnection(matchingId, userId);
+        return new ResponseEntity<>("해당 매칭 신청이 삭제되었습니다.", HttpStatus.OK);
+    }
 }

@@ -121,4 +121,9 @@ public class MyPageService {
         }
         return applicantList;
     }
+
+    public void deleteConnection(Long matchingId, Long userId){
+        Optional<Connection> connection = connectionRepository.findByFromIdAndToId(matchingId, userId);
+        connection.ifPresent(connectionRepository::delete);
+    }
 }
