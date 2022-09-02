@@ -25,6 +25,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             ,"/logout", "/logout/**"
             ,"/myPersonality", "/myPersonality/**"
             ,"/main", "/main/**"
+            ,"/yourPersonality", "/yourPersonality/**"
     };
 
     @Override
