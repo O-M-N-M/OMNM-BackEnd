@@ -24,9 +24,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             ,"/test", "/test/**"
             ,"/logout", "/logout/**"
             ,"/myPersonality", "/myPersonality/**"
-            ,"/noticeBoard", "/noticeBoard/**"
-            ,"/sharingBoard", "/sharingBoard/**"
-            ,"/communityBoard", "/communityBoard/**"
+            ,"/main", "/main/**"
     };
 
     @Override
