@@ -30,7 +30,10 @@ public class UserController {
     public ResponseEntity<String> userJoin(UserDto userDto, MultipartFile multipartFile){
 
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
-        String profileUrl = awsS3Service.uploadFile(multipartFile);
+        String profileUrl = null;
+        if (multipartFile != null){
+            profileUrl = awsS3Service.uploadFile(multipartFile);
+        }
 
         User user = new User();
         user.setLoginId(userDto.getLoginId());
