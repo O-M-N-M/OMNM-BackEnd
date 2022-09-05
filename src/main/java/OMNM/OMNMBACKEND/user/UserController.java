@@ -26,11 +26,27 @@ public class UserController {
     private final JwtTokenService jwtTokenService;
     private final EmailService emailService;
 
+    /**
+     * 아이디
+     * 비밀번호
+     * 비밀번호 일치
+     * 이름
+     * 학교
+     * 이메일
+     * 프로필 이미지 (필수x)
+     * 성별
+     * 기숙사 정보
+     * 카카오톡 아이디
+     * */
+
     @PostMapping("/join")
     public ResponseEntity<String> userJoin(UserDto userDto, MultipartFile multipartFile){
 
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
-        String profileUrl = awsS3Service.uploadFile(multipartFile);
+        String profileUrl = null;
+        if (multipartFile != null){
+            profileUrl = awsS3Service.uploadFile(multipartFile);
+        }
 
         User user = new User();
         user.setLoginId(userDto.getLoginId());
