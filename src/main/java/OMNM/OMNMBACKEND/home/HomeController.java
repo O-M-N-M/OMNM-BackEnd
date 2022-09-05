@@ -18,9 +18,8 @@ public class HomeController{
 
     @GetMapping("")
     public ResponseEntity<HomeDto> welcomePage(HomeDto homeDto){
-        homeDto.setJoinedCount(homeService.getJoinedUserCount());
-        homeDto.setUserCount(homeService.getUserCount());
-        homeDto.setMatchedCount(homeService.getMatchingCount());
+        homeDto.setUserCount(homeService.getMemberCount());
+        homeDto.setMatchedCount(homeService.getMatchedCount());
         return new ResponseEntity<>(homeDto, HttpStatus.OK);
     }
 }
