@@ -5,7 +5,6 @@ import lombok.Setter;
 
 @Getter @Setter
 public class HomeDto {
-    private Integer joinedCount;
     private Integer userCount;
     private Integer matchedCount;
 }
