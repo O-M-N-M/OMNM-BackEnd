@@ -34,9 +34,9 @@ public class YourPersonalityController {
 
     @GetMapping("")
     public ResponseEntity<YourPersonality> viewYourPersonality(){
-        String loginId = "yepppi";
-        Optional<User> user = userService.checkLoginId(loginId);
-        Long yourPersonalityId = user.get().getYourPersonalityId();
+        Long id = 11L;
+        User user = userService.getUserEntity(id);
+        Long yourPersonalityId = user.getYourPersonalityId();
         YourPersonality yourPersonality = yourPersonalityService.findYourPersonality(yourPersonalityId);
         if(yourPersonality == null){
             return new ResponseEntity<>(null, HttpStatus.OK);
