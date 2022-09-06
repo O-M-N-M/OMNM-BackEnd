@@ -15,32 +15,11 @@ public class HomeService {
 
     private final UserRepository userRepository;
 
-    public Integer getJoinedUserCount(){
-        List<User> userList = userRepository.findAll();
-        return userList.size();
+    public Integer getMemberCount(){
+        return userRepository.findAllByStatus(1).size();
     }
 
-    public Integer getUserCount(){
-        List<User> userList = userRepository.findAll();
-        int userCount = userList.size();
-
-        for (User user : userList) {
-            if (user.getStatus() == 0) {
-                userCount -= 1;
-            }
-        }
-        return userCount;
-    }
-
-    public Integer getMatchingCount(){
-        int matchingCount = 0;
-        List<User> userList = userRepository.findAll();
-
-        for (User user : userList) {
-            if (user.getIsMatched() == 1) {
-                matchingCount+=1;
-            }
-        }
-        return matchingCount;
+    public Integer getMatchedCount(){
+        return userRepository.findAllByIsMatchedAndStatus(1, 1).size();
     }
 }

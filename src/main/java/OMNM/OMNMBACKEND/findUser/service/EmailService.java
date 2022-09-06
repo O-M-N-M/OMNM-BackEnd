@@ -10,6 +10,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Random;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -44,6 +46,20 @@ public class EmailService {
         emailDto.setContent("안녕하세요, OMNM 입니다. 임시 비밀번호는 다음과 같습니다." + System.lineSeparator() + tempPw + System.lineSeparator() + "감사합니다.");
 
         findService.findEmailService(findLoginPwDto.getEmail()).get().setPassword(bCryptPasswordEncoder.encode(tempPw));
+
+        return emailDto;
+    }
+
+    public EmailDto sendEmailValidation(String email){
+        EmailDto emailDto = new EmailDto();
+        Random random = new Random();
+        int validationNumber = random.nextInt(888888) + 111111; // 111111 ~ 999999 까지의 랜덤 인증번호 생성
+
+        emailDto.setAddress(email);
+        emailDto.setTitle("[OMNM] 이메일 인증 관련 이메일입니다.");
+        emailDto.setContent("안녕하세요, OMNM 입니다. 이메일 인증 관련 인증번호는 다음과 같습니다." + System.lineSeparator() + validationNumber + System.lineSeparator() + "감사합니다.");
+
+        // Redis Database에 인증번호 저장 과정 보류
 
         return emailDto;
     }

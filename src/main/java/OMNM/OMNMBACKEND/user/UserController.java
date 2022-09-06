@@ -1,5 +1,6 @@
 package OMNM.OMNMBACKEND.user;
 
+import OMNM.OMNMBACKEND.findUser.service.EmailService;
 import OMNM.OMNMBACKEND.s3Image.AwsS3Service;
 import OMNM.OMNMBACKEND.user.domain.User;
 import OMNM.OMNMBACKEND.user.dto.LoginDto;
@@ -23,12 +24,29 @@ public class UserController {
     private final UserService userService;
     private final AwsS3Service awsS3Service;
     private final JwtTokenService jwtTokenService;
+    private final EmailService emailService;
+
+    /**
+     * 아이디
+     * 비밀번호
+     * 비밀번호 일치
+     * 이름
+     * 학교
+     * 이메일
+     * 프로필 이미지 (필수x)
+     * 성별
+     * 기숙사 정보
+     * 카카오톡 아이디
+     * */
 
     @PostMapping("/join")
     public ResponseEntity<String> userJoin(UserDto userDto, MultipartFile multipartFile){
 
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
-        String profileUrl = awsS3Service.uploadFile(multipartFile);
+        String profileUrl = null;
+        if (multipartFile != null){
+            profileUrl = awsS3Service.uploadFile(multipartFile);
+        }
 
         User user = new User();
         user.setLoginId(userDto.getLoginId());
@@ -44,6 +62,23 @@ public class UserController {
 
         userService.saveUser(user);
         return new ResponseEntity<>("회원가입 완료", HttpStatus.OK);
+    }
+
+    @PostMapping("/join/emailValidation")
+    public ResponseEntity<String> emailValidation(String email){
+        emailService.sendingSettings(emailService.sendEmailValidation(email));
+        return new ResponseEntity<>("인증번호 발송 성공", HttpStatus.OK);
+    }
+
+    @PostMapping("/join/emailValidation/checkNumber")
+    public ResponseEntity<String> checkValidationNumber(String email, int userValidationNumber){
+        int validationNumber = 123456;  // 원래는 Redis에서 꺼내와야하지만, 세팅 전이니 그냥 가정 (추후 교체 요망)
+        if(validationNumber == userValidationNumber){
+            return new ResponseEntity<>("인증번호가 일치합니다.", HttpStatus.OK);
+        }
+        else{
+            return new ResponseEntity<>("인증번호가 일치하지 않습니다.", HttpStatus.OK);
+        }
     }
 
     @PostMapping("/join/idDuplicateCheck")
