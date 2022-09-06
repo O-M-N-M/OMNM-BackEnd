@@ -9,10 +9,7 @@ import OMNM.OMNMBACKEND.yourPersonality.service.YourPersonalityService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
@@ -66,5 +63,23 @@ public class YourPersonalityController {
         user.setYourPersonalityId(yourPersonality.getYourPersonalityId());
         userService.saveUser(user);
         return new ResponseEntity<>("상대 성향 설문 등록 완료", HttpStatus.OK);
+    }
+
+    @PatchMapping("")
+    public ResponseEntity<String> modifyYourPersonality(YourPersonalityDto yourPersonalityDto){
+        Long id = 11L;
+        User user = userService.getUserEntity(id);
+        Long yourPersonalityId = user.getYourPersonalityId();
+        YourPersonality yourPersonality = yourPersonalityService.findYourPersonality(yourPersonalityId);
+        yourPersonality.setAge(yourPersonalityDto.getAge());
+        yourPersonality.setMbti(yourPersonalityDto.getMbti());
+        yourPersonality.setIsSmoking(yourPersonalityDto.getIsSmoking());
+        yourPersonality.setDepartment(yourPersonalityDto.getDepartment());
+        yourPersonality.setLifeCycle(yourPersonalityDto.getLifeCycle());
+        yourPersonality.setCleaning(yourPersonalityDto.getCleaning());
+        yourPersonality.setNationality(yourPersonalityDto.getNationality());
+        yourPersonality.setArmyService(yourPersonalityDto.getArmyService());
+        yourPersonalityService.saveYourPersonality(yourPersonality);
+        return new ResponseEntity<>("상대 성향 설문 수정 완료", HttpStatus.OK);
     }
 }
