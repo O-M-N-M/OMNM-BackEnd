@@ -26,46 +26,6 @@ public class YourPersonalityService {
 
     private final YourPersonalityRepository yourPersonalityRepository;
 
-//    public String getAge(Long yourPersonalityId){
-//        Optional<YourPersonality> yourPersonality = yourPersonalityRepository.findById(yourPersonalityId);
-//        return yourPersonality.get();
-//    }
-//
-//    public String getMbti(Long yourPersonalityId){
-//        Optional<YourPersonality> yourPersonality = yourPersonalityRepository.findById(yourPersonalityId);
-//        return yourPersonality.get().getMbti();
-//    }
-//
-//    public Integer getIsSmoking(Long yourPersonalityId){
-//        Optional<YourPersonality> yourPersonality = yourPersonalityRepository.findById(yourPersonalityId);
-//        return yourPersonality.get().getIsSmoking();
-//    }
-//
-//    public Integer getDepartment(Long yourPersonalityId){
-//        Optional<YourPersonality> yourPersonality = yourPersonalityRepository.findById(yourPersonalityId);
-//        return yourPersonality.get().getDepartment();
-//    }
-//
-//    public Integer getLifeCycle(Long yourPersonalityId){
-//        Optional<YourPersonality> yourPersonality = yourPersonalityRepository.findById(yourPersonalityId);
-//        return yourPersonality.get().getLifeCycle();
-//    }
-//
-//    public Integer getCleaning(Long yourPersonalityId){
-//        Optional<YourPersonality> yourPersonality = yourPersonalityRepository.findById(yourPersonalityId);
-//        return yourPersonality.get().getCleaning();
-//    }
-//
-//    public Integer getNationality(Long yourPersonalityId){
-//        Optional<YourPersonality> yourPersonality = yourPersonalityRepository.findById(yourPersonalityId);
-//        return yourPersonality.get().getNationality();
-//    }
-//
-//    public Integer getArmyService(Long yourPersonalityId){
-//        Optional<YourPersonality> yourPersonality = yourPersonalityRepository.findById(yourPersonalityId);
-//        return yourPersonality.get().getArmyService();
-//    }
-
     public void saveYourPersonality(YourPersonality yourPersonality) {
         yourPersonalityRepository.save(yourPersonality);
     }

@@ -51,10 +51,20 @@ public class YourPersonalityController {
 
     @PostMapping("")
     public ResponseEntity<String> registerYourPersonality(YourPersonalityDto yourPersonalityDto){
-        String loginId = "yepppi";
-        Optional<User> user = userService.checkLoginId(loginId);
+        Long id = 11L;
+        User user = userService.getUserEntity(id);
         YourPersonality yourPersonality = new YourPersonality();
         yourPersonality.setAge(yourPersonalityDto.getAge());
+        yourPersonality.setMbti(yourPersonalityDto.getMbti());
+        yourPersonality.setIsSmoking(yourPersonalityDto.getIsSmoking());
+        yourPersonality.setDepartment(yourPersonalityDto.getDepartment());
+        yourPersonality.setLifeCycle(yourPersonalityDto.getLifeCycle());
+        yourPersonality.setCleaning(yourPersonalityDto.getCleaning());
+        yourPersonality.setNationality(yourPersonalityDto.getNationality());
+        yourPersonality.setArmyService(yourPersonalityDto.getArmyService());
+        yourPersonalityService.saveYourPersonality(yourPersonality);
+        user.setYourPersonalityId(yourPersonality.getYourPersonalityId());
+        userService.saveUser(user);
         return new ResponseEntity<>("상대 성향 설문 등록 완료", HttpStatus.OK);
     }
 }
