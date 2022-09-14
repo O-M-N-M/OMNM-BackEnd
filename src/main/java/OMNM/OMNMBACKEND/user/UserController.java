@@ -7,6 +7,7 @@ import OMNM.OMNMBACKEND.user.dto.LoginDto;
 import OMNM.OMNMBACKEND.user.dto.UserDto;
 import OMNM.OMNMBACKEND.user.service.UserService;
 import OMNM.OMNMBACKEND.utils.JwtTokenService;
+import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,9 +17,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Collections;
+import java.util.List;
+
 @RestController
 @RequestMapping("")
 @RequiredArgsConstructor
+@Builder
 public class UserController {
 
     private final UserService userService;
@@ -58,7 +63,14 @@ public class UserController {
         user.setProfileUrl(profileUrl);
         user.setKakaoId(userDto.getKakaoId());
         user.setDormitory(userDto.getDormitory());
-        System.out.println(userDto.getDormitory());
+        List<String> role_user = Collections.singletonList("ROLE_USER");
+
+//        User user = User.builder()
+//                        .loginId(userDto.getLoginId()).password(bCryptPasswordEncoder.encode(userDto.getPassword())).name(userDto.getName())
+//                        .email(userDto.getEmail()).school(userDto.getSchool()).gender(userDto.getGender()).profileUrl(profileUrl)
+//                        .kakaoId(userDto.getKakaoId()).dormitory(userDto.getDormitory()).roles(Collections.singletonList("ROLE_USER")).isMatched(0)
+//                        .status(1).myPersonalityId(null).yourPersonalityId(null)
+//                        .build();
 
         userService.saveUser(user);
         return new ResponseEntity<>("회원가입 완료", HttpStatus.OK);
@@ -93,7 +105,6 @@ public class UserController {
     public ResponseEntity<String> login(LoginDto loginDto){
 
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
-        String encodePassword = bCryptPasswordEncoder.encode(loginDto.getPassword());
 
         // null 값 반환 시 아이디 틀림
         if(userService.checkLoginId(loginDto.getLoginId()).isEmpty()){
@@ -101,10 +112,11 @@ public class UserController {
         }
         // DB에 아이디가 있는 경우
         else{
+            User user = userService.checkLoginId(loginDto.getLoginId()).get();
             // 해당 user의 비밀번호와 같으면
             if(bCryptPasswordEncoder.matches(loginDto.getPassword(), userService.checkLoginId(loginDto.getLoginId()).get().getPassword())){
-                System.out.println(jwtTokenService.createJWT(loginDto.getLoginId()));
-                return new ResponseEntity<String>(jwtTokenService.createJWT(loginDto.getLoginId()), HttpStatus.OK);
+                System.out.println(jwtTokenService.createJWT(loginDto.getLoginId(), user.getRoles()));
+                return new ResponseEntity<String>(jwtTokenService.createJWT(loginDto.getLoginId(), user.getRoles()), HttpStatus.OK);
             }
             // 해당 user의 비밀번호와 맞지 않으면
             else{
