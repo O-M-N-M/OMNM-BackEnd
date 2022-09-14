@@ -106,7 +106,7 @@ public class UserController {
 
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
 
-        // null 값 반환 시 아이디 틀림
+//         null 값 반환 시 아이디 틀림
         if(userService.checkLoginId(loginDto.getLoginId()).isEmpty()){
             return new ResponseEntity<>("아이디 없음", HttpStatus.OK);
         }
@@ -114,7 +114,7 @@ public class UserController {
         else{
             User user = userService.checkLoginId(loginDto.getLoginId()).get();
             // 해당 user의 비밀번호와 같으면
-            if(bCryptPasswordEncoder.matches(loginDto.getPassword(), userService.checkLoginId(loginDto.getLoginId()).get().getPassword())){
+            if(bCryptPasswordEncoder.matches(loginDto.getPassword(), user.getPassword())){
                 System.out.println(jwtTokenService.createJWT(loginDto.getLoginId(), user.getRoles()));
                 return new ResponseEntity<String>(jwtTokenService.createJWT(loginDto.getLoginId(), user.getRoles()), HttpStatus.OK);
             }
