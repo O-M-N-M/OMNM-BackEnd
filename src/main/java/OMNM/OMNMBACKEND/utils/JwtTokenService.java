@@ -29,11 +29,11 @@ public class JwtTokenService {
         secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
     }
 
-    public String createJWT(String userLoginId){
+    public String createJWT(String userLoginId, List<String> roles){
         Claims claims = Jwts.claims().setSubject(userLoginId);
+        claims.put("roles", roles);
         Date now = new Date();
         return Jwts.builder()
-//                .setSubject((String) userLoginId.getPrincipal())
                 .setClaims(claims)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(now.getTime() + tokenValidTime))
@@ -51,7 +51,7 @@ public class JwtTokenService {
     }
 
     public String resolveToken(HttpServletRequest request){
-        return request.getHeader("X-AUTH-TOKEN");
+        return request.getHeader("OMNM");
     }
 
     public boolean validateToken(String JwtToken){
@@ -62,7 +62,4 @@ public class JwtTokenService {
             return false;
         }
     }
-
-
-
 }
