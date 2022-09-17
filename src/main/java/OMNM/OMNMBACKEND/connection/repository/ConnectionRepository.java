@@ -9,5 +9,6 @@ import java.util.Optional;
 @Repository
 public interface ConnectionRepository extends JpaRepository<Connection, Long> {
     List<Connection> findAllByToId(Long toId);
+    List<Connection> findAllByFromId(Long fromId);
     Optional<Connection> findByFromIdAndToId(Long fromId, Long toId);
 }
