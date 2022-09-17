@@ -104,6 +104,10 @@ public class MyPageService {
         }
     }
 
+    /**
+     *  신청 받은 리스트
+     * */
+
     public List<List<String>> getConnectionList(Long userId){
         List<List<String>> applicantList = new ArrayList<>();
         List<Connection> connectionList = connectionRepository.findAllByToId(userId);
@@ -125,5 +129,27 @@ public class MyPageService {
     public void deleteConnection(Long matchingId, Long userId){
         Optional<Connection> connection = connectionRepository.findByFromIdAndToId(matchingId, userId);
         connection.ifPresent(connectionRepository::delete);
+    }
+
+    /**
+     *  신청한 리스트
+     * */
+
+    public List<List<String>> getProposeList(Long userId){
+        List<List<String>> proposeList = new ArrayList<>();
+        List<Connection> connectionList = connectionRepository.findAllByFromId(userId);
+        if (connectionList.size() == 0){
+            return null;
+        }
+        else{
+            for (Connection connection : connectionList) {
+                Optional<User> user = userRepository.findById(connection.getToId());
+                String url = "43.200.120.2:8080/users/" + connection.getToId();
+                String kakaoId = user.get().getKakaoId();
+                List<String> tempList = List.of(new String[]{url, kakaoId});
+                proposeList.add(tempList);
+            }
+        }
+        return proposeList;
     }
 }

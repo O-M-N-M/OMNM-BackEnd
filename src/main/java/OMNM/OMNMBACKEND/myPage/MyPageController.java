@@ -55,9 +55,42 @@ public class MyPageController {
         return new ResponseEntity<>("매칭 상태가 변경되었습니다.", HttpStatus.OK);
     }
 
+    /**
+     * 나에게 신청이 온 사람들의 리스트
+     * */
+
     @GetMapping("/connection")
     public List<List<String>> getConnection(@PathVariable Long userId){
         return myPageService.getConnectionList(userId);
+    }
+
+    /**
+     * 내가 신청한 사람들의 리스트
+     * */
+
+    @GetMapping("/propose")
+    public List<List<String>> getProposeList(@PathVariable Long userId){
+        return myPageService.getProposeList(userId);
+    }
+
+    /**
+     * 나에게 신청이 온 사람들 수
+     * */
+
+    @GetMapping("/connection/count")
+    public Integer getConnectionCount(@PathVariable Long userId){
+        List<List<String>> connectionList = myPageService.getConnectionList(userId);
+        return connectionList.size();
+    }
+
+    /**
+     * 내가 신청한 사람들의 수
+     * */
+
+    @GetMapping("/propose/count")
+    public Integer getProposeCount(@PathVariable Long userId){
+        List<List<String>> connectionList = myPageService.getProposeList(userId);
+        return connectionList.size();
     }
 
     @DeleteMapping("/connection/{matchingId}")
