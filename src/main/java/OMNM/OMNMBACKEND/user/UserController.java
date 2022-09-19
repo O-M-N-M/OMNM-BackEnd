@@ -7,6 +7,7 @@ import OMNM.OMNMBACKEND.user.dto.LoginDto;
 import OMNM.OMNMBACKEND.user.dto.UserDto;
 import OMNM.OMNMBACKEND.user.service.UserService;
 import OMNM.OMNMBACKEND.utils.JwtTokenService;
+import OMNM.OMNMBACKEND.validation.service.ValidationService;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -30,6 +31,7 @@ public class UserController {
     private final AwsS3Service awsS3Service;
     private final JwtTokenService jwtTokenService;
     private final EmailService emailService;
+    private final ValidationService validationService;
 
     /**
      * 아이디
@@ -84,12 +86,17 @@ public class UserController {
 
     @PostMapping("/join/emailValidation/checkNumber")
     public ResponseEntity<String> checkValidationNumber(String email, int userValidationNumber){
-        int validationNumber = 123456;  // 원래는 Redis에서 꺼내와야하지만, 세팅 전이니 그냥 가정 (추후 교체 요망)
-        if(validationNumber == userValidationNumber){
-            return new ResponseEntity<>("인증번호가 일치합니다.", HttpStatus.OK);
+        Integer validationNumber = validationService.getValidationNumber(email);
+        if(validationNumber == null){
+            return new ResponseEntity<>("인증번호가 일치하지 않습니다.", HttpStatus.OK);
         }
         else{
-            return new ResponseEntity<>("인증번호가 일치하지 않습니다.", HttpStatus.OK);
+            if(validationNumber == userValidationNumber){
+                return new ResponseEntity<>("인증번호가 일치합니다.", HttpStatus.OK);
+            }
+            else{
+                return new ResponseEntity<>("인증번호가 일치하지 않습니다.", HttpStatus.OK);
+            }
         }
     }
 
