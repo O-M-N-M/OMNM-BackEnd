@@ -2,6 +2,8 @@ package OMNM.OMNMBACKEND.findUser.service;
 
 import OMNM.OMNMBACKEND.findUser.dto.EmailDto;
 import OMNM.OMNMBACKEND.findUser.dto.FindLoginPwDto;
+import OMNM.OMNMBACKEND.validation.domain.Validation;
+import OMNM.OMNMBACKEND.validation.repository.ValidationRepository;
 import com.sun.istack.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
@@ -10,6 +12,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
 import java.util.Random;
 
 @Service
@@ -19,6 +22,7 @@ public class EmailService {
 
     private final JavaMailSender javaMailSender;
     private final FindService findService;
+    private final ValidationRepository validationRepository;
 
     public StringBuilder setTempKey(){
         StringBuilder tempCode = new StringBuilder();
@@ -59,7 +63,12 @@ public class EmailService {
         emailDto.setTitle("[OMNM] 이메일 인증 관련 이메일입니다.");
         emailDto.setContent("안녕하세요, OMNM 입니다. 이메일 인증 관련 인증번호는 다음과 같습니다." + System.lineSeparator() + validationNumber + System.lineSeparator() + "감사합니다.");
 
-        // Redis Database에 인증번호 저장 과정 보류
+        // Validation DB에 인증번호 저장
+        Optional<Validation> validation = validationRepository.findByEmail(email);
+        Validation validationEntity = validation.get();
+        validationEntity.setValidationNumber(validationNumber);
+        validationEntity.setEmail(email);
+        validationRepository.save(validationEntity);
 
         return emailDto;
     }
