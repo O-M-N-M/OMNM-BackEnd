@@ -1,5 +1,6 @@
 package OMNM.OMNMBACKEND.security;
 
+import OMNM.OMNMBACKEND.blackList.service.BlackListService;
 import OMNM.OMNMBACKEND.utils.JwtAuthenticationFilter;
 import OMNM.OMNMBACKEND.utils.JwtTokenService;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final JwtTokenService jwtTokenService;
+    private final BlackListService blackListService;
 
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder(){
@@ -56,7 +58,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(PERMIT_URL_ARRAY).permitAll()
                 .anyRequest().denyAll()
                 .and()
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenService),
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenService, blackListService),
                         UsernamePasswordAuthenticationFilter.class); // JwtAuthenticationFilter를 UsernamePasswordAuthenticationFilter 전에 넣는다
         // + 토큰에 저장된 유저정보를 활용하여야 하기 때문에 CustomUserDetailService 클래스를 생성합니다.
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
