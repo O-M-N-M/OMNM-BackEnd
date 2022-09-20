@@ -1,8 +1,12 @@
 package OMNM.OMNMBACKEND.myPage;
 
+import OMNM.OMNMBACKEND.blackList.domain.BlackList;
+import OMNM.OMNMBACKEND.blackList.repository.BlackListRepository;
+import OMNM.OMNMBACKEND.blackList.service.BlackListService;
 import OMNM.OMNMBACKEND.myPage.dto.ViewUserDto;
 import OMNM.OMNMBACKEND.myPage.service.MyPageService;
 import OMNM.OMNMBACKEND.s3Image.AwsS3Service;
+import OMNM.OMNMBACKEND.utils.JwtTokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +15,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.List;
 
@@ -30,6 +35,8 @@ public class MyPageController {
 
     private final MyPageService myPageService;
     private final AwsS3Service awsS3Service;
+    private final JwtTokenService jwtTokenService;
+    private final BlackListRepository blackListRepository;
 
     @DeleteMapping("")
     public ResponseEntity<String> deleteAccount(@PathVariable Long userId){
@@ -100,5 +107,18 @@ public class MyPageController {
          * */
         myPageService.deleteConnection(matchingId, userId);
         return new ResponseEntity<>("해당 매칭 신청이 삭제되었습니다.", HttpStatus.OK);
+    }
+
+    /**
+     * 로그아웃
+     * */
+
+    @GetMapping("/logout")
+    public ResponseEntity<String> logout(HttpServletRequest request){
+        String jwtToken = jwtTokenService.resolveToken(request);
+        BlackList blackList = new BlackList();
+        blackList.setToken(jwtToken);
+        blackListRepository.save(blackList);
+        return new ResponseEntity<>("로그아웃 되었습니다.", HttpStatus.OK);
     }
 }
