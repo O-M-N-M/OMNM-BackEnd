@@ -1,13 +1,13 @@
 package OMNM.OMNMBACKEND.test;
 
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class TestController {
 
-    @PostMapping("/test")
+    @GetMapping("/test")
     public String test(){
-        return "Spring Security Jwt Token Test 성공!";
+        return "스프링 시큐리티 테스트";
     }
 }
