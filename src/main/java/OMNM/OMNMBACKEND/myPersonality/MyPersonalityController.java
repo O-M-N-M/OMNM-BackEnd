@@ -54,7 +54,7 @@ public class MyPersonalityController {
 
     @PatchMapping("")
     public ResponseEntity<String> modifyMyPersonality(MyPersonalityDto myPersonalityDto){
-        Long id = 10L;
+        Long id = 11L;
         User user = userService.getUserEntity(id);
         Long myPersonalityId = user.getMyPersonalityId();
         MyPersonality myPersonality = myPersonalityService.findMyPersonality(myPersonalityId);
