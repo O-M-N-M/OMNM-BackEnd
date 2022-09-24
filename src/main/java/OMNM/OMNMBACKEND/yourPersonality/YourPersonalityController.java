@@ -9,6 +9,8 @@ import OMNM.OMNMBACKEND.yourPersonality.service.YourPersonalityService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
@@ -34,8 +36,9 @@ public class YourPersonalityController {
 
     @GetMapping("")
     public ResponseEntity<YourPersonality> viewYourPersonality(){
-        Long id = 11L;
-        User user = userService.getUserEntity(id);
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = ((UserDetails) principal).getUsername();
+        User user = userService.getUserEntityByLoginId(username);
         Long yourPersonalityId = user.getYourPersonalityId();
         YourPersonality yourPersonality = yourPersonalityService.findYourPersonality(yourPersonalityId);
         if(yourPersonality == null){
@@ -48,8 +51,9 @@ public class YourPersonalityController {
 
     @PostMapping("")
     public ResponseEntity<String> registerYourPersonality(YourPersonalityDto yourPersonalityDto){
-        Long id = 11L;
-        User user = userService.getUserEntity(id);
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = ((UserDetails) principal).getUsername();
+        User user = userService.getUserEntityByLoginId(username);
         YourPersonality yourPersonality = new YourPersonality();
         yourPersonality.setAge(yourPersonalityDto.getAge());
         yourPersonality.setMbti(yourPersonalityDto.getMbti());
@@ -67,8 +71,9 @@ public class YourPersonalityController {
 
     @PatchMapping("")
     public ResponseEntity<String> modifyYourPersonality(YourPersonalityDto yourPersonalityDto){
-        Long id = 11L;
-        User user = userService.getUserEntity(id);
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = ((UserDetails) principal).getUsername();
+        User user = userService.getUserEntityByLoginId(username);
         Long yourPersonalityId = user.getYourPersonalityId();
         YourPersonality yourPersonality = yourPersonalityService.findYourPersonality(yourPersonalityId);
         yourPersonality.setAge(yourPersonalityDto.getAge());
