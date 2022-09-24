@@ -8,6 +8,8 @@ import OMNM.OMNMBACKEND.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -33,8 +35,9 @@ public class MyPersonalityController {
 
     @PostMapping("")
     public ResponseEntity<String> registerMyPersonality(MyPersonalityDto myPersonalityDto){
-        Long id = 11L;
-        User user = userService.getUserEntity(id);
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = ((UserDetails) principal).getUsername();
+        User user = userService.getUserEntityByLoginId(username);
         MyPersonality myPersonality = new MyPersonality();
         myPersonality.setAge(myPersonalityDto.getAge());
         myPersonality.setMbti(myPersonalityDto.getMbti());
@@ -54,8 +57,9 @@ public class MyPersonalityController {
 
     @PatchMapping("")
     public ResponseEntity<String> modifyMyPersonality(MyPersonalityDto myPersonalityDto){
-        Long id = 11L;
-        User user = userService.getUserEntity(id);
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = ((UserDetails) principal).getUsername();
+        User user = userService.getUserEntityByLoginId(username);
         Long myPersonalityId = user.getMyPersonalityId();
         MyPersonality myPersonality = myPersonalityService.findMyPersonality(myPersonalityId);
         myPersonality.setAge(myPersonalityDto.getAge());
@@ -78,8 +82,9 @@ public class MyPersonalityController {
 
     @GetMapping("")
     public MyPersonality showMyPersonality(){
-        Long id = 11L;
-        User user = userService.getUserEntity(id);
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = ((UserDetails) principal).getUsername();
+        User user = userService.getUserEntityByLoginId(username);
         Long myPersonalityId = user.getMyPersonalityId();
         if (myPersonalityId == null){
             return null;
