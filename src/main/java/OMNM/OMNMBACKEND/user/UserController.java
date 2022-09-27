@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("")
@@ -80,8 +81,14 @@ public class UserController {
 
     @PostMapping("/join/emailValidation")
     public ResponseEntity<String> emailValidation(String email){
-        emailService.sendingSettings(emailService.sendEmailValidation(email));
-        return new ResponseEntity<>("인증번호 발송 성공", HttpStatus.OK);
+        Optional<User> user = userService.checkEmail(email);
+        if(user.isPresent()){
+            return new ResponseEntity<>("이미 존재하는 이메일입니다.", HttpStatus.OK);
+        }
+        else{
+            emailService.sendingSettings(emailService.sendEmailValidation(email));
+            return new ResponseEntity<>("인증번호 발송 성공", HttpStatus.OK);
+        }
     }
 
     @PostMapping("/join/emailValidation/checkNumber")

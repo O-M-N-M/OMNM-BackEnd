@@ -65,7 +65,13 @@ public class EmailService {
 
         // Validation DB에 인증번호 저장
         Optional<Validation> validation = validationRepository.findByEmail(email);
-        Validation validationEntity = validation.get();
+        Validation validationEntity;
+        if(validation.isEmpty()){
+            validationEntity = new Validation();
+        }
+        else{
+            validationEntity = validation.get();
+        }
         validationEntity.setValidationNumber(validationNumber);
         validationEntity.setEmail(email);
         validationRepository.save(validationEntity);
