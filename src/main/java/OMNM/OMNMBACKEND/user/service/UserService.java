@@ -31,10 +31,15 @@ public class UserService implements UserDetailsService {
         return userRepository.findByLoginIdAndStatus(id, 1);
     }
 
+    public Optional<User> checkEmail(String email){
+        return userRepository.findByEmailAndStatus(email, 1);
+    }
+
     public User getUserEntity(Long userId){
         Optional<User> user = userRepository.findByUserIdAndStatus(userId, 1);
         return user.orElse(null);
     }
+
 
     public User getUserEntityByLoginId(String loginId){
         Optional<User> user = userRepository.findByLoginIdAndStatus(loginId, 1);
