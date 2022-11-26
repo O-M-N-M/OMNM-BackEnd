@@ -128,15 +128,18 @@ public class MyPageService {
         return applicantList;
     }
 
-    public void deleteConnection(Long matchingId, Long userId){
-        Optional<Connection> connection = connectionRepository.findByFromIdAndToId(matchingId, userId);
-        connection.ifPresent(connectionRepository::delete);
+    public Connection getConnectionEntity(Long userId, Long matchingId){
+        Optional<Connection> connection = connectionRepository.findByFromIdAndToId(userId, matchingId);
+        return connection.orElse(null);
+    }
+
+    public void deleteConnection(Connection connection){
+        connectionRepository.delete(connection);
     }
 
     /**
      *  신청한 리스트
      * */
-
     public List<List<String>> getProposeList(Long userId){
         List<List<String>> proposeList = new ArrayList<>();
         List<Connection> connectionList = connectionRepository.findAllByFromId(userId);
