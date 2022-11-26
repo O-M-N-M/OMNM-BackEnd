@@ -22,7 +22,7 @@ import java.util.List;
 /**
  * 회원탈퇴
  * 비밀번호 재설정
- * 내 정보 보여주기
+ * 프로필 보기 상세 정보
  * 매칭 완료
  * 신청 받은 리스트
  * 신청 보낸 리스트
@@ -63,7 +63,7 @@ public class MyPageController {
     }
 
     /**
-     * 내 정보 보여주기
+     * 프로필 보기 상세 정보
      * */
     @GetMapping("")
     public ResponseEntity<ViewUserDto> viewMyInformation(@PathVariable Long userId){
