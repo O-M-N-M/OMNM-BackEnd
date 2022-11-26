@@ -49,6 +49,7 @@ public class MyPersonalityController {
         myPersonality.setNationality(myPersonalityDto.getNationality());
         myPersonality.setArmyService(myPersonalityDto.getArmyService());
         myPersonality.setIntroduction(myPersonalityDto.getIntroduction());
+        myPersonality.setUserId(user.getUserId());
         myPersonalityService.saveMyPersonality(myPersonality);
         user.setMyPersonalityId(myPersonality.getMyPersonalityId());
         userService.saveUser(user);
@@ -72,6 +73,7 @@ public class MyPersonalityController {
         myPersonality.setNationality(myPersonalityDto.getNationality());
         myPersonality.setArmyService(myPersonalityDto.getArmyService());
         myPersonality.setIntroduction(myPersonalityDto.getIntroduction());
+        myPersonality.setUserId(user.getUserId());
         myPersonalityService.saveMyPersonality(myPersonality);
         return new ResponseEntity<>("나의 성향 설문 수정 완료", HttpStatus.OK);
     }

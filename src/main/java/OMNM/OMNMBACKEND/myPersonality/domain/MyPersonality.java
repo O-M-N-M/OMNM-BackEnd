@@ -57,4 +57,7 @@ public class MyPersonality {
 
     @Column(name = "introduction")
     private String introduction;
+
+    @Column(name = "user_id")
+    private Long userId;
 }
