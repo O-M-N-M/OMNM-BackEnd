@@ -20,4 +20,7 @@ public class Connection {
 
     @Column(name = "to_Id")
     private Long toId;
+
+    @Column(name = "created_time")
+    private String createdTime;
 }

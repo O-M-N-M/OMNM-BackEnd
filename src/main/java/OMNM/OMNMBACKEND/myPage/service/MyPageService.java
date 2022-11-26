@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -119,7 +120,8 @@ public class MyPageService {
                 Optional<User> user = userRepository.findById(connection.getFromId());
                 String url = "43.200.120.2:8080/users/" + connection.getFromId();
                 String kakaoId = user.get().getKakaoId();
-                List<String> tempList = List.of(new String[]{url, kakaoId});
+                String time = connection.getCreatedTime();
+                List<String> tempList = List.of(new String[]{url, kakaoId, time});
                 applicantList.add(tempList);
             }
         }
