@@ -3,6 +3,8 @@ package OMNM.OMNMBACKEND.myPage;
 import OMNM.OMNMBACKEND.blackList.domain.BlackList;
 import OMNM.OMNMBACKEND.blackList.repository.BlackListRepository;
 import OMNM.OMNMBACKEND.blackList.service.BlackListService;
+import OMNM.OMNMBACKEND.connection.domain.Connection;
+import OMNM.OMNMBACKEND.connection.repository.ConnectionRepository;
 import OMNM.OMNMBACKEND.myPage.dto.ViewUserDto;
 import OMNM.OMNMBACKEND.myPage.service.MyPageService;
 import OMNM.OMNMBACKEND.s3Image.AwsS3Service;
@@ -42,6 +44,7 @@ public class MyPageController {
     private final AwsS3Service awsS3Service;
     private final JwtTokenService jwtTokenService;
     private final BlackListRepository blackListRepository;
+    private final ConnectionRepository connectionRepository;
 
     /**
      * 회원탈퇴
@@ -116,6 +119,15 @@ public class MyPageController {
     /**
      * 받은 신청 삭제
      * */
+    @DeleteMapping("/connection/reverse/{matchingId}")
+    public ResponseEntity<String> deleteConnectionReverse(@PathVariable Long matchingId, @PathVariable Long userId){
+        /**
+         * matchingId -> userId로 가는 connection 객체 지워야함
+         * */
+        Connection connection = myPageService.getConnectionEntity(matchingId, userId);
+        myPageService.deleteConnection(connection);
+        return new ResponseEntity<>("해당 매칭 신청이 삭제되었습니다.", HttpStatus.OK);
+    }
 
     /**
      * 보낸 신청 삭제
@@ -125,7 +137,8 @@ public class MyPageController {
         /**
          * matchingId -> userId로 가는 connection 객체 지워야함
          * */
-        myPageService.deleteConnection(matchingId, userId);
+        Connection connection = myPageService.getConnectionEntity(userId, matchingId);
+        myPageService.deleteConnection(connection);
         return new ResponseEntity<>("해당 매칭 신청이 삭제되었습니다.", HttpStatus.OK);
     }
 

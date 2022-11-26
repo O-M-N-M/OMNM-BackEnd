@@ -128,15 +128,18 @@ public class MyPageService {
         return applicantList;
     }
 
-    public void deleteConnection(Long matchingId, Long userId){
-        Optional<Connection> connection = connectionRepository.findByFromIdAndToId(matchingId, userId);
-        connection.ifPresent(connectionRepository::delete);
+    public Connection getConnectionEntity(Long fromId, Long toId){
+        Optional<Connection> connection = connectionRepository.findByFromIdAndToId(fromId, toId);
+        return connection.orElse(null);
+    }
+
+    public void deleteConnection(Connection connection){
+        connectionRepository.delete(connection);
     }
 
     /**
      *  신청한 리스트
      * */
-
     public List<List<String>> getProposeList(Long userId){
         List<List<String>> proposeList = new ArrayList<>();
         List<Connection> connectionList = connectionRepository.findAllByFromId(userId);
@@ -148,7 +151,8 @@ public class MyPageService {
                 Optional<User> user = userRepository.findById(connection.getToId());
                 String url = "43.200.120.2:8080/users/" + connection.getToId();
                 String kakaoId = user.get().getKakaoId();
-                List<String> tempList = List.of(new String[]{url, kakaoId});
+                String time = connection.getCreatedTime();
+                List<String> tempList = List.of(new String[]{url, kakaoId, time});
                 proposeList.add(tempList);
             }
         }
