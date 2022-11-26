@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -21,9 +23,9 @@ public class MainService {
             Connection connection = new Connection();
             connection.setFromId(userId);
             connection.setToId(matchingId);
+            connection.setCreatedTime(LocalDateTime.now());
             connectionRepository.save(connection);
             return false;
         }
     }
-
 }
