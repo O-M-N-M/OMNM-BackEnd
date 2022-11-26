@@ -128,8 +128,8 @@ public class MyPageService {
         return applicantList;
     }
 
-    public Connection getConnectionEntity(Long userId, Long matchingId){
-        Optional<Connection> connection = connectionRepository.findByFromIdAndToId(userId, matchingId);
+    public Connection getConnectionEntity(Long fromId, Long toId){
+        Optional<Connection> connection = connectionRepository.findByFromIdAndToId(fromId, toId);
         return connection.orElse(null);
     }
 

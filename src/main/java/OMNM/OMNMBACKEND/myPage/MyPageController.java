@@ -119,6 +119,15 @@ public class MyPageController {
     /**
      * 받은 신청 삭제
      * */
+    @DeleteMapping("/connection/reverse/{matchingId}")
+    public ResponseEntity<String> deleteConnectionReverse(@PathVariable Long matchingId, @PathVariable Long userId){
+        /**
+         * matchingId -> userId로 가는 connection 객체 지워야함
+         * */
+        Connection connection = myPageService.getConnectionEntity(matchingId, userId);
+        myPageService.deleteConnection(connection);
+        return new ResponseEntity<>("해당 매칭 신청이 삭제되었습니다.", HttpStatus.OK);
+    }
 
     /**
      * 보낸 신청 삭제
