@@ -46,7 +46,7 @@ public class MyPageController {
     /**
      * 회원탈퇴
      * */
-    @DeleteMapping("")
+    @PatchMapping("")
     public ResponseEntity<String> deleteAccount(@PathVariable Long userId){
         myPageService.deleteUserAccount(userId);
         return new ResponseEntity<>("회원 탈퇴 완료", HttpStatus.OK);
