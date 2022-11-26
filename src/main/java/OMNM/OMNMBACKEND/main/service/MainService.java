@@ -31,4 +31,19 @@ public class MainService {
             return false;
         }
     }
+
+    public Integer ageConverter(Integer age){
+        if(age<=23){
+            return 1;
+        }
+        else if(age<=26){
+            return 2;
+        }
+        else if(age<=29){
+            return 3;
+        }
+        else{
+            return 4;
+        }
+    }
 }

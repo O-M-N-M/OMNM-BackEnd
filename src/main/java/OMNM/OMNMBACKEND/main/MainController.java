@@ -1,17 +1,22 @@
 package OMNM.OMNMBACKEND.main;
 
+import OMNM.OMNMBACKEND.main.dto.AllRecommendResponseDto;
 import OMNM.OMNMBACKEND.main.service.MainService;
+import OMNM.OMNMBACKEND.myPersonality.domain.MyPersonality;
+import OMNM.OMNMBACKEND.myPersonality.repository.MyPersonalityRepository;
+import OMNM.OMNMBACKEND.myPersonality.service.MyPersonalityService;
 import OMNM.OMNMBACKEND.user.domain.User;
 import OMNM.OMNMBACKEND.user.service.UserService;
+import OMNM.OMNMBACKEND.yourPersonality.domain.YourPersonality;
+import OMNM.OMNMBACKEND.yourPersonality.service.YourPersonalityService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.*;
 
 @RestController
 @RequestMapping("/main")
@@ -20,6 +25,9 @@ public class MainController {
 
     private final MainService mainService;
     private final UserService userService;
+    private final YourPersonalityService yourPersonalityService;
+    private final MyPersonalityRepository myPersonalityRepository;
+    private final MyPersonalityService myPersonalityService;
 
     @PostMapping("/propose/{matchingId}")
     public ResponseEntity<String> proposeRoomMate(@PathVariable Long matchingId){
@@ -34,5 +42,169 @@ public class MainController {
         else{
             return new ResponseEntity<>("신청 완료되었습니다.", HttpStatus.OK);
         }
+    }
+
+    /**
+     * 전체 추천 리스트 조회 API
+     * --------- 개발 FLOW ---------
+     * 1. 로그인 상태인 userId 가져오기 (Security Principal)
+     * 2. userId를 바탕으로 yourPersonalityId 구하기
+     * 3. 나중 parsing을 위한 gender, dormitory 저장
+     * 4. yourPersonalityId를 바탕으로 yourPersonality 객체 구하기
+     * 5. yourPersonality 객체 정보 저장 - 상관없음이면 true 같은 condition 만들면 좋을듯
+     * 6. myPersonality findAll Parsing(with gender, dormitory) 리스트 가져오기
+     * 7. dictionary 세팅 {userId : percent} 형식
+     * 8. myPersonality 돌면서 dictionary에 append
+     * 9. dictionary sorting (내림차순)
+     * 10. 상위 9개 끊기, 만약에 9개가 안되면 그냥 all로 보내면 될듯!
+     * 11. dto 반환!
+     * */
+
+
+
+    @PostMapping
+    public List<AllRecommendResponseDto> getRecommendList(Integer criteria){
+
+        /**
+         * 개발 FLOW 1
+         * */
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = ((UserDetails) principal).getUsername();
+        User user = userService.getUserEntityByLoginId(username);
+        Long userId = user.getUserId();
+
+        /**
+         * 개발 FLOW 2
+         * */
+        Long yourPersonalityId = user.getYourPersonalityId();
+
+        /**
+         * 개발 FLOW 3
+         * */
+        Integer userGender = user.getGender();
+        Integer userDormitory = user.getDormitory();
+
+        /**
+         * 개발 FLOW 4
+         * */
+        YourPersonality yourPersonalityEntity = yourPersonalityService.findYourPersonality(yourPersonalityId);
+
+        /**
+         * 개발 FLOW 5
+         * */
+        String mateAge = yourPersonalityEntity.getAge();
+        String mateMbti = yourPersonalityEntity.getMbti();
+        Integer mateSmoking = yourPersonalityEntity.getIsSmoking();
+        Integer mateDepartment = yourPersonalityEntity.getDepartment();
+        Integer mateLifeCycle = yourPersonalityEntity.getLifeCycle();
+        Integer mateCleaning = yourPersonalityEntity.getCleaning();
+        Integer mateArmyService = yourPersonalityEntity.getArmyService();
+        Integer mateNationality = yourPersonalityEntity.getNationality();
+
+        /**
+         * 개발 FLOW 6
+         * */
+        List<MyPersonality> candidateList = myPersonalityRepository.findAll();
+
+        /**
+         * 개발 FLOW 7
+         * */
+        HashMap<Long, Integer> recommendPercent = new HashMap<>();
+
+        /**
+         * 개발 FLOW 8
+         * age : 20대 초반(1), 20대 중반(2), 20대 후반(3), 30대 이상(4), 상관없음(5)
+         * */
+        for (MyPersonality myPersonality : candidateList) {
+            int matchingCount = 0;   // percent 계산을 위한 count 변수 선언
+            Integer convertedAge = mainService.ageConverter(myPersonality.getAge());
+            User userEntity = userService.getUserEntity(myPersonality.getUserId());
+            if(userEntity.getIsMatched() == 1 || !userEntity.getGender().equals(userGender)
+                    || !userEntity.getDormitory().equals(userDormitory) || userEntity.getUserId().equals(user.getUserId())){
+                continue;
+            }
+            MyPersonality myPersonalityEntity = myPersonalityService.findMyPersonality(userEntity.getMyPersonalityId());
+
+            if (mateAge.contains(String.valueOf(convertedAge)) || mateAge.equals("{5}")) {    // 나이 조사
+                matchingCount += 1;
+            }
+            if (mateMbti.contains(myPersonality.getMbti()) || mateMbti.equals("{ALL}")) {  // mbti 조사
+                matchingCount += 1;
+            }
+            if (mateSmoking == 2 || mateSmoking.equals(myPersonality.getIsSmoking())) {    // 흡연유무 조사
+                matchingCount += 1;
+            }
+            if (mateDepartment == 2) {
+                matchingCount += 1;
+            }
+            if (mateDepartment == 1) {
+                if (!myPersonalityEntity.getDepartment().equals(myPersonality.getDepartment())) {
+                    matchingCount += 1;
+                }
+            }
+            if (mateDepartment == 0) {
+                if (myPersonalityEntity.getDepartment().equals(myPersonality.getDepartment())) {
+                    matchingCount += 1;
+                }
+            }
+
+            if (mateLifeCycle == 2 || mateLifeCycle.equals(myPersonality.getLifeCycle())) {    // 생활습관 조사
+                matchingCount += 1;
+            }
+
+            if (mateCleaning == 4 || mateCleaning.equals(myPersonality.getCleaning())) {   // 청소주기 조사
+                matchingCount += 1;
+            }
+
+            if (mateArmyService == 2 || mateArmyService.equals(myPersonality.getArmyService())) {
+                matchingCount += 1;
+            }
+
+            if (mateNationality == 1) {
+                matchingCount += 1;
+            }
+            if (mateNationality == 0) {
+                if (myPersonality.getDepartment().equals("대한민국")) {
+                    matchingCount += 1;
+                }
+            }
+            if(matchingCount>=criteria){
+                recommendPercent.put(myPersonality.getUserId(), matchingCount);
+            }
+        }
+
+        /**
+         * 개발 FLOW 9
+         * */
+        List<Map.Entry<Long, Integer>> entryList = new LinkedList<>(recommendPercent.entrySet());
+        entryList.sort(((o1, o2) -> recommendPercent.get(o2.getKey()) - recommendPercent.get(o1.getKey())));
+
+        /**
+         * 개발 FLOW 10
+         * */
+        List<AllRecommendResponseDto> allRecommendResponseDtoList = new ArrayList<>();
+        int count = 0;
+        for(Map.Entry<Long, Integer> entry : entryList){
+            User userEntity = userService.getUserEntity(entry.getKey());
+            MyPersonality myPersonality = myPersonalityService.findMyPersonality(userEntity.getMyPersonalityId());
+            AllRecommendResponseDto allRecommendResponseDto = new AllRecommendResponseDto();
+            allRecommendResponseDto.setUserId(entry.getKey());
+            allRecommendResponseDto.setAge(myPersonality.getAge());
+            allRecommendResponseDto.setIntroduction(myPersonality.getIntroduction());
+            allRecommendResponseDto.setName(userEntity.getName());
+            allRecommendResponseDto.setProfileUrl(userEntity.getProfileUrl());
+            allRecommendResponseDto.setPercent((float)((entry.getValue()/8.0)*100));
+            allRecommendResponseDto.setMbti(myPersonality.getMbti());
+            allRecommendResponseDtoList.add(allRecommendResponseDto);
+            count+=1;
+            if(count == 9){
+                break;
+            }
+        }
+
+        /**
+         * 개발 FLOW 11
+         * */
+        return allRecommendResponseDtoList;
     }
 }
