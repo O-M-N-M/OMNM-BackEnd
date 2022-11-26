@@ -39,7 +39,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             ,"/myPersonality", "/myPersonality/**"
             ,"/main", "/main/**"
             ,"/yourPersonality", "/yourPersonality/**"
-            ,"/test", "/test/**"
+            ,"/test", "/test/**",
+            "/myInfo", "/myInfo/**"
     };
 
     @Bean
