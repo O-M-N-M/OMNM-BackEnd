@@ -50,7 +50,7 @@ public class UserController {
      * */
 
     @PostMapping(value = "/join",consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<String> userJoin(@RequestPart(value = "userDto") UserDto userDto, @RequestPart(required = false, value = "multipartFile") MultipartFile multipartFile){
+        public ResponseEntity<String> userJoin(@RequestPart(value = "userDto") UserDto userDto, @RequestPart(required = false, value = "multipartFile") MultipartFile multipartFile){
 
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
         String profileUrl = null;
