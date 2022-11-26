@@ -20,12 +20,17 @@ import java.security.Principal;
 import java.util.List;
 
 /**
- * 매칭 API
- * 로그아웃
  * 회원탈퇴
- * 나의 정보 보여주기 & 수정
- * 신청리스트
  * 비밀번호 재설정
+ * 내 정보 보여주기
+ * 매칭 완료
+ * 신청 받은 리스트
+ * 신청 보낸 리스트
+ * 신청 받은 리스트 수
+ * 신청 보낸 리스트 수
+ * 받은 신청 삭제
+ * 보낸 신청 삭제
+ * 로그아웃
  * */
 
 @RestController
@@ -38,12 +43,18 @@ public class MyPageController {
     private final JwtTokenService jwtTokenService;
     private final BlackListRepository blackListRepository;
 
+    /**
+     * 회원탈퇴
+     * */
     @DeleteMapping("")
     public ResponseEntity<String> deleteAccount(@PathVariable Long userId){
         myPageService.deleteUserAccount(userId);
         return new ResponseEntity<>("회원 탈퇴 완료", HttpStatus.OK);
     }
 
+    /**
+     * 비밀번호 재설정
+     * */
     @PatchMapping("/resetPassword")
     public ResponseEntity<String> resetPassword(@PathVariable Long userId, String password){
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
@@ -51,11 +62,17 @@ public class MyPageController {
         return new ResponseEntity<>("비밀번호 변경 완료", HttpStatus.OK);
     }
 
+    /**
+     * 내 정보 보여주기
+     * */
     @GetMapping("")
     public ResponseEntity<ViewUserDto> viewMyInformation(@PathVariable Long userId){
         return new ResponseEntity<>(myPageService.setViewUserDto(userId), HttpStatus.OK);
     }
 
+    /**
+     * 매칭 완료
+     * */
     @PatchMapping("/matching")
     public ResponseEntity<String> getMatching(@PathVariable Long userId){
         myPageService.changeMatchingStatus(userId);
@@ -63,27 +80,24 @@ public class MyPageController {
     }
 
     /**
-     * 나에게 신청이 온 사람들의 리스트
+     * 신청 받은 리스트
      * */
-
     @GetMapping("/connection")
     public List<List<String>> getConnection(@PathVariable Long userId){
         return myPageService.getConnectionList(userId);
     }
 
     /**
-     * 내가 신청한 사람들의 리스트
+     * 신청 보낸 리스트
      * */
-
     @GetMapping("/propose")
     public List<List<String>> getProposeList(@PathVariable Long userId){
         return myPageService.getProposeList(userId);
     }
 
     /**
-     * 나에게 신청이 온 사람들 수
+     * 신청 받은 리스트 수
      * */
-
     @GetMapping("/connection/count")
     public Integer getConnectionCount(@PathVariable Long userId){
         List<List<String>> connectionList = myPageService.getConnectionList(userId);
@@ -91,15 +105,21 @@ public class MyPageController {
     }
 
     /**
-     * 내가 신청한 사람들의 수
+     * 신청 보낸 리스트 수
      * */
-
     @GetMapping("/propose/count")
     public Integer getProposeCount(@PathVariable Long userId){
         List<List<String>> connectionList = myPageService.getProposeList(userId);
         return connectionList.size();
     }
 
+    /**
+     * 받은 신청 삭제
+     * */
+
+    /**
+     * 보낸 신청 삭제
+     * */
     @DeleteMapping("/connection/{matchingId}")
     public ResponseEntity<String> deleteConnection(@PathVariable Long matchingId, @PathVariable Long userId){
         /**
@@ -112,7 +132,6 @@ public class MyPageController {
     /**
      * 로그아웃
      * */
-
     @GetMapping("/logout")
     public ResponseEntity<String> logout(HttpServletRequest request){
         String jwtToken = jwtTokenService.resolveToken(request);
