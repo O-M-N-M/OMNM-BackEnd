@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter @Setter
@@ -22,5 +23,5 @@ public class Connection {
     private Long toId;
 
     @Column(name = "created_Time")
-    private Long createdTime;
+    private LocalDateTime createdTime;
 }
