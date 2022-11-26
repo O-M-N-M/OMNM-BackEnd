@@ -120,7 +120,7 @@ public class MyPageService {
                 Optional<User> user = userRepository.findById(connection.getFromId());
                 String url = "43.200.120.2:8080/users/" + connection.getFromId();
                 String kakaoId = user.get().getKakaoId();
-                String time = String.valueOf(connection.getCreatedTime());
+                String time = connection.getCreatedTime();
                 List<String> tempList = List.of(new String[]{url, kakaoId, time});
                 applicantList.add(tempList);
             }
