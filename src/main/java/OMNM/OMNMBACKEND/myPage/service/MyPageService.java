@@ -148,7 +148,8 @@ public class MyPageService {
                 Optional<User> user = userRepository.findById(connection.getToId());
                 String url = "43.200.120.2:8080/users/" + connection.getToId();
                 String kakaoId = user.get().getKakaoId();
-                List<String> tempList = List.of(new String[]{url, kakaoId});
+                String time = connection.getCreatedTime();
+                List<String> tempList = List.of(new String[]{url, kakaoId, time});
                 proposeList.add(tempList);
             }
         }
