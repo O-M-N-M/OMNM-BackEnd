@@ -11,10 +11,12 @@ import OMNM.OMNMBACKEND.validation.service.ValidationService;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -47,8 +49,8 @@ public class UserController {
      * 카카오톡 아이디
      * */
 
-    @PostMapping("/join")
-    public ResponseEntity<String> userJoin(UserDto userDto, MultipartFile multipartFile){
+    @PostMapping(value = "/join",consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<String> userJoin(@RequestPart(value = "userDto") UserDto userDto, @RequestPart(required = false, value = "multipartFile") MultipartFile multipartFile){
 
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
         String profileUrl = null;
@@ -66,14 +68,6 @@ public class UserController {
         user.setProfileUrl(profileUrl);
         user.setKakaoId(userDto.getKakaoId());
         user.setDormitory(userDto.getDormitory());
-        List<String> role_user = Collections.singletonList("ROLE_USER");
-
-//        User user = User.builder()
-//                        .loginId(userDto.getLoginId()).password(bCryptPasswordEncoder.encode(userDto.getPassword())).name(userDto.getName())
-//                        .email(userDto.getEmail()).school(userDto.getSchool()).gender(userDto.getGender()).profileUrl(profileUrl)
-//                        .kakaoId(userDto.getKakaoId()).dormitory(userDto.getDormitory()).roles(Collections.singletonList("ROLE_USER")).isMatched(0)
-//                        .status(1).myPersonalityId(null).yourPersonalityId(null)
-//                        .build();
 
         userService.saveUser(user);
         return new ResponseEntity<>("회원가입 완료", HttpStatus.OK);
