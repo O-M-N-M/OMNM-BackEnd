@@ -1,6 +1,7 @@
 package OMNM.OMNMBACKEND.main;
 
 import OMNM.OMNMBACKEND.main.dto.AllRecommendResponseDto;
+import OMNM.OMNMBACKEND.main.dto.DetailRecommendResponseDto;
 import OMNM.OMNMBACKEND.main.service.MainService;
 import OMNM.OMNMBACKEND.myPersonality.domain.MyPersonality;
 import OMNM.OMNMBACKEND.myPersonality.repository.MyPersonalityRepository;
@@ -59,9 +60,6 @@ public class MainController {
      * 10. 상위 9개 끊기, 만약에 9개가 안되면 그냥 all로 보내면 될듯!
      * 11. dto 반환!
      * */
-
-
-
     @PostMapping
     public List<AllRecommendResponseDto> getRecommendList(Integer criteria){
 
@@ -160,13 +158,8 @@ public class MainController {
                 matchingCount += 1;
             }
 
-            if (mateNationality == 1) {
+            if (mateNationality == 1 || myPersonality.getNationality().equals("대한민국")) {
                 matchingCount += 1;
-            }
-            if (mateNationality == 0) {
-                if (myPersonality.getDepartment().equals("대한민국")) {
-                    matchingCount += 1;
-                }
             }
             if(matchingCount>=criteria){
                 recommendPercent.put(myPersonality.getUserId(), matchingCount);
@@ -206,5 +199,84 @@ public class MainController {
          * 개발 FLOW 11
          * */
         return allRecommendResponseDtoList;
+    }
+
+    @GetMapping("{userId}")
+    public ResponseEntity<DetailRecommendResponseDto> getUserDetailProfile(@PathVariable Long userId){
+
+        int percentCount = 0;
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = ((UserDetails) principal).getUsername();
+        User myUser = userService.getUserEntityByLoginId(username);
+        User profileUser = userService.getUserEntity(userId);
+        MyPersonality profileMyPersonality = myPersonalityService.findMyPersonality(profileUser.getMyPersonalityId());
+        YourPersonality wantedPersonality = yourPersonalityService.findYourPersonality(myUser.getYourPersonalityId());
+        MyPersonality applierPersonality = myPersonalityService.findMyPersonality(myUser.getMyPersonalityId());
+
+        /**
+         * myUser의 yourPersonality랑 profileUser의 myPersonality가 얼마나 맞는지 알아야됨
+         * */
+
+        DetailRecommendResponseDto detailRecommendResponseDto = new DetailRecommendResponseDto();
+        detailRecommendResponseDto.setProfileUrl(profileUser.getProfileUrl());
+        detailRecommendResponseDto.setDormitory(profileUser.getDormitory());
+        detailRecommendResponseDto.setName(profileUser.getName());
+        detailRecommendResponseDto.setDepartment(profileMyPersonality.getDepartment());
+        detailRecommendResponseDto.setMbti(profileMyPersonality.getMbti());
+        detailRecommendResponseDto.setAge(profileMyPersonality.getAge());
+        detailRecommendResponseDto.setArmyService(profileMyPersonality.getArmyService());
+        detailRecommendResponseDto.setNationality(profileMyPersonality.getNationality());
+        detailRecommendResponseDto.setIsCleaning(profileMyPersonality.getCleaning());
+        detailRecommendResponseDto.setLifeCycle(profileMyPersonality.getLifeCycle());
+        detailRecommendResponseDto.setSleepingPattern(profileMyPersonality.getSleepingPattern());
+        detailRecommendResponseDto.setIsSmoking(profileMyPersonality.getIsSmoking());
+
+        /**
+         * percent 비교 계산에 들어가는 항목
+         * 1. isSmoking - done
+         * 2. Cleaning - done
+         * 3. mbti - done
+         * 4. nationality - done
+         * 5. department - done
+         * 6. age - done
+         * 7. armyService - done
+         * 8. lifeCycle
+         * */
+        if(wantedPersonality.getIsSmoking() == 2 || Objects.equals(wantedPersonality.getIsSmoking(), profileMyPersonality.getIsSmoking())){
+            percentCount+=1;
+        }
+        if(wantedPersonality.getCleaning() == 4 || Objects.equals(wantedPersonality.getCleaning(), profileMyPersonality.getCleaning())){
+            percentCount+=1;
+        }
+        if(Objects.equals(wantedPersonality.getMbti(), "{ALL}") || wantedPersonality.getMbti().contains(profileMyPersonality.getMbti())){
+            percentCount+=1;
+        }
+        if(wantedPersonality.getDepartment() == 2){
+            percentCount+=1;
+        }
+        if(wantedPersonality.getDepartment() == 1){
+            if(!profileMyPersonality.getDepartment().equals(applierPersonality.getDepartment())){
+                percentCount+=1;
+            }
+        }
+        if(wantedPersonality.getDepartment() == 0){
+            if(profileMyPersonality.getDepartment().equals(applierPersonality.getDepartment())){
+                percentCount+=1;
+            }
+        }
+        if(wantedPersonality.getNationality() == 1 || profileMyPersonality.getNationality().equals("대한민국")){
+            percentCount+=1;
+        }
+        if(wantedPersonality.getAge().equals("{5}") || wantedPersonality.getAge().contains(String.valueOf(mainService.ageConverter(profileMyPersonality.getAge())))){
+            percentCount+=1;
+        }
+        if(wantedPersonality.getArmyService() == 2 || wantedPersonality.getArmyService().equals(profileMyPersonality.getArmyService())){
+            percentCount+=1;
+        }
+        if(wantedPersonality.getLifeCycle() == 2 || wantedPersonality.getLifeCycle().equals(profileMyPersonality.getLifeCycle())){
+            percentCount+=1;
+        }
+        detailRecommendResponseDto.setPercent((float)((percentCount / 8.0) * 100));
+        return new ResponseEntity<>(detailRecommendResponseDto, HttpStatus.OK);
     }
 }
