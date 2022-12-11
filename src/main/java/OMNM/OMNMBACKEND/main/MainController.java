@@ -117,13 +117,14 @@ public class MainController {
             int matchingCount = 0;   // percent 계산을 위한 count 변수 선언
             Integer convertedAge = mainService.ageConverter(myPersonality.getAge());
             User userEntity = userService.getUserEntity(myPersonality.getUserId());
+            MyPersonality loginMyPersonality = myPersonalityService.findMyPersonality(user.getMyPersonalityId());
             if(userEntity.getIsMatched() == 1 || !userEntity.getGender().equals(userGender)
                     || !userEntity.getDormitory().equals(userDormitory) || userEntity.getUserId().equals(user.getUserId())){
                 continue;
             }
             MyPersonality myPersonalityEntity = myPersonalityService.findMyPersonality(userEntity.getMyPersonalityId());
 
-            if (mateAge.contains(String.valueOf(convertedAge)) || mateAge.equals("{5}")) {    // 나이 조사
+            if (mateAge.contains(String.valueOf(convertedAge)) || mateAge.equals("{4}")) {    // 나이 조사
                 matchingCount += 1;
             }
             if (mateMbti.contains(myPersonality.getMbti()) || mateMbti.equals("{ALL}")) {  // mbti 조사
@@ -136,12 +137,12 @@ public class MainController {
                 matchingCount += 1;
             }
             if (mateDepartment == 1) {
-                if (!myPersonalityEntity.getDepartment().equals(myPersonality.getDepartment())) {
+                if (!loginMyPersonality.getDepartment().equals(myPersonality.getDepartment())) {
                     matchingCount += 1;
                 }
             }
             if (mateDepartment == 0) {
-                if (myPersonalityEntity.getDepartment().equals(myPersonality.getDepartment())) {
+                if (loginMyPersonality.getDepartment().equals(myPersonality.getDepartment())) {
                     matchingCount += 1;
                 }
             }
