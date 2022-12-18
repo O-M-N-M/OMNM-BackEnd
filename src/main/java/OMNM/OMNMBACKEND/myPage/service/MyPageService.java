@@ -36,7 +36,7 @@ public class MyPageService {
         user.ifPresent(value -> value.setPassword(password));
     }
 
-    public void changeProfileUrl(Long userId, String profileUrl, String kakaoId, Integer dormitory){
+    public void modifyInfo(Long userId, String profileUrl, String kakaoId, Integer dormitory){
         Optional<User> user = userRepository.findById(userId);
         user.ifPresent(value -> value.setProfileUrl(profileUrl));
         user.ifPresent(value -> value.setKakaoId(kakaoId));
