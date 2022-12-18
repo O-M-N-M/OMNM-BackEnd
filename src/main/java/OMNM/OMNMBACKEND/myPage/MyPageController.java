@@ -5,17 +5,23 @@ import OMNM.OMNMBACKEND.blackList.repository.BlackListRepository;
 import OMNM.OMNMBACKEND.blackList.service.BlackListService;
 import OMNM.OMNMBACKEND.connection.domain.Connection;
 import OMNM.OMNMBACKEND.connection.repository.ConnectionRepository;
+import OMNM.OMNMBACKEND.myPage.dto.ModifyDto;
 import OMNM.OMNMBACKEND.myPage.dto.ViewUserDto;
 import OMNM.OMNMBACKEND.myPage.service.MyPageService;
 import OMNM.OMNMBACKEND.s3Image.AwsS3Service;
+import OMNM.OMNMBACKEND.user.domain.User;
+import OMNM.OMNMBACKEND.user.dto.UserDto;
+import OMNM.OMNMBACKEND.user.service.UserService;
 import OMNM.OMNMBACKEND.utils.JwtTokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
@@ -45,6 +51,7 @@ public class MyPageController {
     private final JwtTokenService jwtTokenService;
     private final BlackListRepository blackListRepository;
     private final ConnectionRepository connectionRepository;
+    private final UserService userService;
 
     /**
      * 회원탈퇴
@@ -152,5 +159,27 @@ public class MyPageController {
         blackList.setToken(jwtToken);
         blackListRepository.save(blackList);
         return new ResponseEntity<>("로그아웃 되었습니다.", HttpStatus.OK);
+    }
+
+    /**
+     * 개인정보(카카오톡 아이디, 기숙사) 변경
+     * */
+    @PatchMapping(value = "/modifyInfo", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+    ResponseEntity<String> modifyInfo(@RequestPart(value = "key") ModifyDto modifyDto, @RequestPart(required = false, value = "file") MultipartFile multipartFile){
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = ((UserDetails) principal).getUsername();
+        User user = userService.getUserEntityByLoginId(username);
+
+        String profileUrl = null;
+        if (multipartFile != null){
+            profileUrl = awsS3Service.uploadFile(multipartFile);
+        }
+
+        user.setProfileUrl(profileUrl);
+        user.setDormitory(modifyDto.getDormitory());
+        user.setKakaoId(modifyDto.getKakaoId());
+        userService.saveUser(user);
+
+        return new ResponseEntity<>("회원정보 수정 완료", HttpStatus.OK);
     }
 }
