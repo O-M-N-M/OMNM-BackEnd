@@ -50,7 +50,7 @@ public class MyPersonality {
     private Integer cleaning;
 
     @Column(name = "nationality")
-    private String nationality;
+    private Integer nationality;
 
     @Column(name = "armyService")
     private Integer armyService;
