@@ -14,7 +14,7 @@ public class DetailUserDto {
     private Integer lifeCycle;
     private String sleepingPattern;
     private Integer cleaning;
-    private String nationality;
+    private Integer nationality;
     private Integer armyService;
     private String introduction;
     private Float rating;

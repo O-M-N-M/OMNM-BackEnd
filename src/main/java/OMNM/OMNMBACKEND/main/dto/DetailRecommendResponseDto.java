@@ -15,7 +15,7 @@ public class DetailRecommendResponseDto {
     private Integer lifeCycle;
     private String sleepingPattern;
     private Integer isCleaning;
-    private String nationality;
+    private Integer nationality;
     private Integer armyService;
     private Integer dormitory;
     private String department;

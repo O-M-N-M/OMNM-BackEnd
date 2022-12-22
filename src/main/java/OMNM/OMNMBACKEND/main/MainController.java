@@ -159,7 +159,7 @@ public class MainController {
                 matchingCount += 1;
             }
 
-            if (mateNationality == 1 || myPersonality.getNationality().equals("대한민국")) {
+            if (mateNationality == 1 || myPersonality.getNationality()==1) {
                 matchingCount += 1;
             }
             if(matchingCount>=criteria){
@@ -265,7 +265,7 @@ public class MainController {
                 percentCount+=1;
             }
         }
-        if(wantedPersonality.getNationality() == 1 || profileMyPersonality.getNationality().equals("대한민국")){
+        if(wantedPersonality.getNationality() == 1 || profileMyPersonality.getNationality()==0){
             percentCount+=1;
         }
         if(wantedPersonality.getAge().equals("{5}") || wantedPersonality.getAge().contains(String.valueOf(mainService.ageConverter(profileMyPersonality.getAge())))){
