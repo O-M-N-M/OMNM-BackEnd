@@ -41,6 +41,15 @@ public class JwtTokenService {
                 .compact();
     }
 
+    public String createRefreshToken(){
+        Date now = new Date();
+        return Jwts.builder()
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(now.getTime() + tokenValidTime))
+                .signWith(SignatureAlgorithm.HS256, secretKey)
+                .compact();
+    }
+
     public Authentication authentication(String JwtToken){
         UserDetails userDetails = userDetailsService.loadUserByUsername(this.getUserId(JwtToken));
         return new UsernamePasswordAuthenticationToken(userDetails,"",userDetails.getAuthorities());

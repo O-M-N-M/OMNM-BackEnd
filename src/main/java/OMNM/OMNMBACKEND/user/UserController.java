@@ -4,12 +4,14 @@ import OMNM.OMNMBACKEND.findUser.service.EmailService;
 import OMNM.OMNMBACKEND.s3Image.AwsS3Service;
 import OMNM.OMNMBACKEND.user.domain.User;
 import OMNM.OMNMBACKEND.user.dto.LoginDto;
+import OMNM.OMNMBACKEND.user.dto.TokenDto;
 import OMNM.OMNMBACKEND.user.dto.UserDto;
 import OMNM.OMNMBACKEND.user.service.UserService;
 import OMNM.OMNMBACKEND.utils.JwtTokenService;
 import OMNM.OMNMBACKEND.validation.service.ValidationService;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -110,7 +112,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(LoginDto loginDto){
+    public HttpEntity<?> login(LoginDto loginDto){
 
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
 
@@ -123,8 +125,10 @@ public class UserController {
             User user = userService.checkLoginId(loginDto.getLoginId()).get();
             // 해당 user의 비밀번호와 같으면
             if(bCryptPasswordEncoder.matches(loginDto.getPassword(), user.getPassword())){
-                System.out.println(jwtTokenService.createJWT(loginDto.getLoginId(), user.getRoles()));
-                return new ResponseEntity<String>(jwtTokenService.createJWT(loginDto.getLoginId(), user.getRoles()), HttpStatus.OK);
+                TokenDto tokenDto = new TokenDto();
+                tokenDto.setAccessToken(jwtTokenService.createJWT(loginDto.getLoginId(), user.getRoles()));
+                tokenDto.setRefreshToken(jwtTokenService.createRefreshToken());
+                return new ResponseEntity<>(tokenDto, HttpStatus.OK);
             }
             // 해당 user의 비밀번호와 맞지 않으면
             else{
