@@ -17,7 +17,7 @@ import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/yourPersonality")
+@RequestMapping("yourPersonality")
 public class YourPersonalityController {
     private final YourPersonalityService yourPersonalityService;
     private final YourPersonalityRepository yourPersonalityRepository;
