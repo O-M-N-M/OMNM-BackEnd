@@ -159,7 +159,7 @@ public class MainController {
                 matchingCount += 1;
             }
 
-            if (mateNationality == 1 || myPersonality.getNationality()==1) {
+            if (mateNationality == 1 || myPersonality.getNationality()==0) {
                 matchingCount += 1;
             }
             if(matchingCount>=criteria){
