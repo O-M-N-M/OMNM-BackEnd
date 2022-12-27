@@ -2,6 +2,8 @@ package OMNM.OMNMBACKEND.user;
 
 import OMNM.OMNMBACKEND.findUser.service.EmailService;
 import OMNM.OMNMBACKEND.s3Image.AwsS3Service;
+import OMNM.OMNMBACKEND.token.domain.Token;
+import OMNM.OMNMBACKEND.token.repository.TokenRepository;
 import OMNM.OMNMBACKEND.user.domain.User;
 import OMNM.OMNMBACKEND.user.dto.LoginDto;
 import OMNM.OMNMBACKEND.user.dto.TokenDto;
@@ -37,6 +39,7 @@ public class UserController {
     private final JwtTokenService jwtTokenService;
     private final EmailService emailService;
     private final ValidationService validationService;
+    private final TokenRepository tokenRepository;
 
     /**
      * 아이디
@@ -125,9 +128,13 @@ public class UserController {
             User user = userService.checkLoginId(loginDto.getLoginId()).get();
             // 해당 user의 비밀번호와 같으면
             if(bCryptPasswordEncoder.matches(loginDto.getPassword(), user.getPassword())){
+                Token token = new Token();
                 TokenDto tokenDto = new TokenDto();
                 tokenDto.setAccessToken(jwtTokenService.createJWT(loginDto.getLoginId(), user.getRoles()));
                 tokenDto.setRefreshToken(jwtTokenService.createRefreshToken());
+                token.setAccessToken(tokenDto.getAccessToken());
+                token.setRefreshToken(tokenDto.getRefreshToken());
+                tokenRepository.save(token);
                 return new ResponseEntity<>(tokenDto, HttpStatus.OK);
             }
             // 해당 user의 비밀번호와 맞지 않으면
