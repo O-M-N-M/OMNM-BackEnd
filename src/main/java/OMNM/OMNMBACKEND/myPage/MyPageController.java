@@ -169,13 +169,16 @@ public class MyPageController {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username = ((UserDetails) principal).getUsername();
         User user = userService.getUserEntityByLoginId(username);
+        String originalProfileUrl = user.getProfileUrl();
 
         String profileUrl = null;
         if (multipartFile != null){
             profileUrl = awsS3Service.uploadFile(multipartFile);
+            user.setProfileUrl(profileUrl);
         }
-
-        user.setProfileUrl(profileUrl);
+        else{
+            user.setProfileUrl(originalProfileUrl);
+        }
         user.setDormitory(modifyDto.getDormitory());
         user.setKakaoId(modifyDto.getKakaoId());
         userService.saveUser(user);
