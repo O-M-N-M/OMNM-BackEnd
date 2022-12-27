@@ -1,0 +1,17 @@
+1. (클라이언트) : 사용자 로그인
+
+2. (서버) : 회원 정보 확인 후 Access Token(개인정보 o) & Refresh Token(개인정보 x) 발급
+
+3. (클라이언트) : API 호출 시, Access Token만으로 호출
+
+4. (서버) : Access Token이 유효하면 API 응답
+
+5. (서버) : Access Token의 유효기간이 지났을 경우, 403 Forbidden 반환
+
+6. (클라이언트) : 403 Forbidden을 받으면 Access Token / Refresh Token을 동시에 보냄
+
+7. (서버) : Refresh Token이 유효하면 새로운 Access Token을 발급해주고 Refresh Token이 유효하지 않으면 403 Forbidden 반환
+
+8. (클라이언트) : 새로운 Access Token이 오면 다시 API 호출 / 또 403 Forbidden을 받으면 사용자에게 재로그인 요청
+
+## Refresh Token을 DB에 저장

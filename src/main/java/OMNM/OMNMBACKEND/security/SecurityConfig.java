@@ -34,7 +34,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             "/","/**/*.png","/**/*.jpg","/**/*.js","/**/*.css","/**/*.html","/**/*.gif","/**/*.svg"
             ,"/home", "/home/**"
             ,"/join", "/join/**", "/login", "/login/**"
-            ,"/find", "/find/**"
+            ,"/find", "/find/**",
+            "/token", "/token/**"
     };
 
     private static final String[] AUTHENTICATED_URL_ARRAY={
