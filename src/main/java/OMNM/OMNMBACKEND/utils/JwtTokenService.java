@@ -22,17 +22,16 @@ import javax.servlet.http.HttpServletRequest;
 public class JwtTokenService {
 
     private String secretKey = "OMNMprojectLOGINservice";
-    private long tokenValidTime = 30 * 60 * 1000L;
     private final UserDetailsService userDetailsService;
 
     protected void init() {
         secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
     }
 
-    public String createJWT(String userLoginId, List<String> roles){
+    public String createJWT(String userLoginId){
         Claims claims = Jwts.claims().setSubject(userLoginId);
-        claims.put("roles", roles);
         Date now = new Date();
+        long tokenValidTime = 30 * 60 * 1000L;
         return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(new Date())
@@ -43,9 +42,10 @@ public class JwtTokenService {
 
     public String createRefreshToken(){
         Date now = new Date();
+        long refreshTokenValidTime = 30 * 60 * 1000 * 24L;
         return Jwts.builder()
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(now.getTime() + tokenValidTime))
+                .setExpiration(new Date(now.getTime() + refreshTokenValidTime))
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
     }

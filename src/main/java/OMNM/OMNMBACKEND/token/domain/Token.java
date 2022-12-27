@@ -20,4 +20,7 @@ public class Token {
 
     @Column(name = "refresh_token")
     private String refreshToken;
+
+    @Column(name = "login_id")
+    private String loginId;
 }

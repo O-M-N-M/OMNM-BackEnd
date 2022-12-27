@@ -130,10 +130,11 @@ public class UserController {
             if(bCryptPasswordEncoder.matches(loginDto.getPassword(), user.getPassword())){
                 Token token = new Token();
                 TokenDto tokenDto = new TokenDto();
-                tokenDto.setAccessToken(jwtTokenService.createJWT(loginDto.getLoginId(), user.getRoles()));
+                tokenDto.setAccessToken(jwtTokenService.createJWT(loginDto.getLoginId()));
                 tokenDto.setRefreshToken(jwtTokenService.createRefreshToken());
                 token.setAccessToken(tokenDto.getAccessToken());
                 token.setRefreshToken(tokenDto.getRefreshToken());
+                token.setLoginId(loginDto.getLoginId());
                 tokenRepository.save(token);
                 return new ResponseEntity<>(tokenDto, HttpStatus.OK);
             }
