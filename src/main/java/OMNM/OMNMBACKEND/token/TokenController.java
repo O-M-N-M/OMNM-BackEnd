@@ -25,8 +25,8 @@ public class TokenController {
     private final TokenRepository tokenRepository;
     private final TokenService tokenService;
 
-    @GetMapping("")
-    public ResponseEntity<String> emailValidation(TokenDto tokenDto){
+    @PostMapping("")
+    public ResponseEntity<String> getnewToken(TokenDto tokenDto){
         if(tokenService.isValidRefreshToken(tokenDto.getAccessToken(), tokenDto.getRefreshToken())){
             Optional<Token> tokenEntity = tokenRepository.findByAccessTokenAndRefreshToken(tokenDto.getAccessToken(), tokenDto.getRefreshToken());
             String newAccessToken = jwtTokenService.createJWT(tokenEntity.get().getLoginId());
