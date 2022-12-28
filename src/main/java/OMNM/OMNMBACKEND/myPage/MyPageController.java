@@ -57,7 +57,7 @@ public class MyPageController {
     /**
      * 회원탈퇴
      * */
-    @DeleteMapping("")
+    @PostMapping("")
     public ResponseEntity<String> deleteAccount(@PathVariable Long userId, DeleteDto deleteDto){
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username = ((UserDetails) principal).getUsername();
