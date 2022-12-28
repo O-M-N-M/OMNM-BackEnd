@@ -59,11 +59,14 @@ public class MyPageController {
      * */
     @PostMapping("")
     public ResponseEntity<String> deleteAccount(@PathVariable Long userId, DeleteDto deleteDto){
+
+        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username = ((UserDetails) principal).getUsername();
         User user = userService.getUserEntityByLoginId(username);
 
-        if (user.getLoginId().equals(deleteDto.getLoginId()) && user.getPassword().equals(deleteDto.getPassword())){
+        if (user.getLoginId().equals(deleteDto.getLoginId()) && bCryptPasswordEncoder.matches(deleteDto.getPassword(), user.getPassword())){
             myPageService.deleteUserAccount(userId);
             return new ResponseEntity<>("회원 탈퇴 완료", HttpStatus.OK);
         }
