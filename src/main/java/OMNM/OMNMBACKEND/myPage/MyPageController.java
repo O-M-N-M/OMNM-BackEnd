@@ -7,6 +7,7 @@ import OMNM.OMNMBACKEND.connection.domain.Connection;
 import OMNM.OMNMBACKEND.connection.repository.ConnectionRepository;
 import OMNM.OMNMBACKEND.myPage.dto.DeleteDto;
 import OMNM.OMNMBACKEND.myPage.dto.ModifyDto;
+import OMNM.OMNMBACKEND.myPage.dto.PasswordDto;
 import OMNM.OMNMBACKEND.myPage.dto.ViewUserDto;
 import OMNM.OMNMBACKEND.myPage.service.MyPageService;
 import OMNM.OMNMBACKEND.s3Image.AwsS3Service;
@@ -80,10 +81,21 @@ public class MyPageController {
      * 비밀번호 재설정
      * */
     @PatchMapping("/resetPassword")
-    public ResponseEntity<String> resetPassword(@PathVariable Long userId, String password){
+    public ResponseEntity<String> resetPassword(@PathVariable Long userId, PasswordDto passwordDto){
+
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
-        myPageService.resetUserPassword(userId, bCryptPasswordEncoder.encode(password));
-        return new ResponseEntity<>("비밀번호 변경 완료", HttpStatus.OK);
+
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = ((UserDetails) principal).getUsername();
+        User user = userService.getUserEntityByLoginId(username);
+
+        if(bCryptPasswordEncoder.matches(passwordDto.getOriginalPassword(), user.getPassword())){
+            myPageService.resetUserPassword(userId, bCryptPasswordEncoder.encode(passwordDto.getNewPassword()));
+            return new ResponseEntity<>("비밀번호 변경 완료", HttpStatus.OK);
+        }
+        else{
+            return new ResponseEntity<>("회원정보가 올바르지 않습니다", HttpStatus.NOT_FOUND);
+        }
     }
 
     /**
