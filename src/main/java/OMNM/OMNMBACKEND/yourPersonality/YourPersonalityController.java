@@ -40,11 +40,11 @@ public class YourPersonalityController {
         String username = ((UserDetails) principal).getUsername();
         User user = userService.getUserEntityByLoginId(username);
         Long yourPersonalityId = user.getYourPersonalityId();
-        YourPersonality yourPersonality = yourPersonalityService.findYourPersonality(yourPersonalityId);
-        if(yourPersonality == null){
+        if(yourPersonalityId == null){
             return new ResponseEntity<>(null, HttpStatus.OK);
         }
         else{
+            YourPersonality yourPersonality = yourPersonalityService.findYourPersonality(yourPersonalityId);
             return new ResponseEntity<>(yourPersonality, HttpStatus.OK);
         }
     }
