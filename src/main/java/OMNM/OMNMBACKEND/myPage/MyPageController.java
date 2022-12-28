@@ -5,6 +5,7 @@ import OMNM.OMNMBACKEND.blackList.repository.BlackListRepository;
 import OMNM.OMNMBACKEND.blackList.service.BlackListService;
 import OMNM.OMNMBACKEND.connection.domain.Connection;
 import OMNM.OMNMBACKEND.connection.repository.ConnectionRepository;
+import OMNM.OMNMBACKEND.myPage.dto.DeleteDto;
 import OMNM.OMNMBACKEND.myPage.dto.ModifyDto;
 import OMNM.OMNMBACKEND.myPage.dto.ViewUserDto;
 import OMNM.OMNMBACKEND.myPage.service.MyPageService;
@@ -56,10 +57,20 @@ public class MyPageController {
     /**
      * 회원탈퇴
      * */
-    @PatchMapping("")
-    public ResponseEntity<String> deleteAccount(@PathVariable Long userId){
-        myPageService.deleteUserAccount(userId);
-        return new ResponseEntity<>("회원 탈퇴 완료", HttpStatus.OK);
+    @DeleteMapping("")
+    public ResponseEntity<String> deleteAccount(@PathVariable Long userId, DeleteDto deleteDto){
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = ((UserDetails) principal).getUsername();
+        User user = userService.getUserEntityByLoginId(username);
+
+        if (user.getLoginId().equals(deleteDto.getLoginId()) && user.getPassword().equals(deleteDto.getPassword())){
+            myPageService.deleteUserAccount(userId);
+            return new ResponseEntity<>("회원 탈퇴 완료", HttpStatus.OK);
+        }
+        else{
+            return new ResponseEntity<>("회원 정보가 올바르지 않습니다", HttpStatus.BAD_REQUEST);
+        }
+
     }
 
     /**
