@@ -7,6 +7,8 @@ import OMNM.OMNMBACKEND.connection.repository.ConnectionRepository;
 import OMNM.OMNMBACKEND.myPage.dto.GetLatestConnectionsDto;
 import OMNM.OMNMBACKEND.myPage.dto.ModifyDto;
 import OMNM.OMNMBACKEND.myPage.dto.PagingViewUserDto;
+import OMNM.OMNMBACKEND.myPage.dto.DeleteDto;
+import OMNM.OMNMBACKEND.myPage.dto.PasswordDto;
 import OMNM.OMNMBACKEND.myPage.dto.ViewUserDto;
 import OMNM.OMNMBACKEND.myPage.service.MyPageService;
 import OMNM.OMNMBACKEND.myPersonality.domain.MyPersonality;
@@ -58,20 +60,44 @@ public class MyPageController {
     /**
      * 회원탈퇴
      * */
-    @PatchMapping("")
-    public ResponseEntity<String> deleteAccount(@PathVariable Long userId){
-        myPageService.deleteUserAccount(userId);
-        return new ResponseEntity<>("회원 탈퇴 완료", HttpStatus.OK);
+    @PostMapping("")
+    public ResponseEntity<String> deleteAccount(@PathVariable Long userId, DeleteDto deleteDto){
+
+        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = ((UserDetails) principal).getUsername();
+        User user = userService.getUserEntityByLoginId(username);
+
+        if (user.getLoginId().equals(deleteDto.getLoginId()) && bCryptPasswordEncoder.matches(deleteDto.getPassword(), user.getPassword())){
+            myPageService.deleteUserAccount(userId);
+            return new ResponseEntity<>("회원 탈퇴 완료", HttpStatus.OK);
+        }
+        else{
+            return new ResponseEntity<>("회원 정보가 올바르지 않습니다", HttpStatus.BAD_REQUEST);
+        }
+
     }
 
     /**
      * 비밀번호 재설정
      * */
     @PatchMapping("/resetPassword")
-    public ResponseEntity<String> resetPassword(@PathVariable Long userId, String password){
+    public ResponseEntity<String> resetPassword(@PathVariable Long userId, PasswordDto passwordDto){
+
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
-        myPageService.resetUserPassword(userId, bCryptPasswordEncoder.encode(password));
-        return new ResponseEntity<>("비밀번호 변경 완료", HttpStatus.OK);
+
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = ((UserDetails) principal).getUsername();
+        User user = userService.getUserEntityByLoginId(username);
+
+        if(bCryptPasswordEncoder.matches(passwordDto.getOriginalPassword(), user.getPassword())){
+            myPageService.resetUserPassword(userId, bCryptPasswordEncoder.encode(passwordDto.getNewPassword()));
+            return new ResponseEntity<>("비밀번호 변경 완료", HttpStatus.OK);
+        }
+        else{
+            return new ResponseEntity<>("회원정보가 올바르지 않습니다", HttpStatus.NOT_FOUND);
+        }
     }
 
     /**
@@ -229,13 +255,16 @@ public class MyPageController {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username = ((UserDetails) principal).getUsername();
         User user = userService.getUserEntityByLoginId(username);
+        String originalProfileUrl = user.getProfileUrl();
 
         String profileUrl = null;
         if (multipartFile != null){
             profileUrl = awsS3Service.uploadFile(multipartFile);
+            user.setProfileUrl(profileUrl);
         }
-
-        user.setProfileUrl(profileUrl);
+        else{
+            user.setProfileUrl(originalProfileUrl);
+        }
         user.setDormitory(modifyDto.getDormitory());
         user.setKakaoId(modifyDto.getKakaoId());
         userService.saveUser(user);
