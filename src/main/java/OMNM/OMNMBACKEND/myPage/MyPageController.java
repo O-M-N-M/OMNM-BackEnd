@@ -2,17 +2,21 @@ package OMNM.OMNMBACKEND.myPage;
 
 import OMNM.OMNMBACKEND.blackList.domain.BlackList;
 import OMNM.OMNMBACKEND.blackList.repository.BlackListRepository;
-import OMNM.OMNMBACKEND.blackList.service.BlackListService;
 import OMNM.OMNMBACKEND.connection.domain.Connection;
 import OMNM.OMNMBACKEND.connection.repository.ConnectionRepository;
+import OMNM.OMNMBACKEND.myPage.dto.GetLatestConnectionsDto;
+import OMNM.OMNMBACKEND.myPage.dto.ModifyDto;
+import OMNM.OMNMBACKEND.myPage.dto.PagingViewUserDto;
+import OMNM.OMNMBACKEND.myPage.dto.DeleteDto;
 import OMNM.OMNMBACKEND.myPage.dto.DeleteDto;
 import OMNM.OMNMBACKEND.myPage.dto.ModifyDto;
 import OMNM.OMNMBACKEND.myPage.dto.PasswordDto;
 import OMNM.OMNMBACKEND.myPage.dto.ViewUserDto;
 import OMNM.OMNMBACKEND.myPage.service.MyPageService;
+import OMNM.OMNMBACKEND.myPersonality.domain.MyPersonality;
+import OMNM.OMNMBACKEND.myPersonality.service.MyPersonalityService;
 import OMNM.OMNMBACKEND.s3Image.AwsS3Service;
 import OMNM.OMNMBACKEND.user.domain.User;
-import OMNM.OMNMBACKEND.user.dto.UserDto;
 import OMNM.OMNMBACKEND.user.service.UserService;
 import OMNM.OMNMBACKEND.utils.JwtTokenService;
 import lombok.RequiredArgsConstructor;
@@ -26,8 +30,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
-import java.security.Principal;
-import java.util.List;
+import java.util.*;
 
 /**
  * 회원탈퇴
@@ -54,6 +57,7 @@ public class MyPageController {
     private final BlackListRepository blackListRepository;
     private final ConnectionRepository connectionRepository;
     private final UserService userService;
+    private final MyPersonalityService myPersonalityService;
 
     /**
      * 회원탈퇴
@@ -119,8 +123,54 @@ public class MyPageController {
      * 신청 받은 리스트
      * */
     @GetMapping("/connection")
-    public List<List<String>> getConnection(@PathVariable Long userId){
-        return myPageService.getConnectionList(userId);
+    public HashMap<String, List<GetLatestConnectionsDto>> getConnection(){
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = ((UserDetails) principal).getUsername();
+
+        UserDetails loginUser = userService.loadUserByUsername(username);
+        User user = (User) loginUser;
+
+        List<PagingViewUserDto> pagingViewUserDtoList = new ArrayList<>();
+        List<Connection> connectionList = connectionRepository.findAllByToId(user.getUserId());
+
+        Set<String> timeSet = new HashSet<>();
+        HashMap<String, List<GetLatestConnectionsDto>> getLatestConnections = new HashMap<>();
+
+        if (connectionList.size() == 0){
+            return null;
+        }
+        else{
+            for (Connection connection : connectionList) {
+                PagingViewUserDto pagingViewUserDto = new PagingViewUserDto(); //프로필 사진, 이름, 나이, 시간
+                User connectionUser = userService.getUserEntityById(connection.getFromId());
+                MyPersonality connectionUserMy = myPersonalityService.findMyPersonality(connectionUser.getMyPersonalityId());
+                pagingViewUserDto.setAge(connectionUserMy.getAge());
+                pagingViewUserDto.setName(connectionUser.getName());
+                pagingViewUserDto.setProfileUrl(connectionUser.getProfileUrl());
+                pagingViewUserDto.setTime(connection.getCreatedTime());
+                timeSet.add(connection.getCreatedTime());
+                pagingViewUserDtoList.add(pagingViewUserDto);
+            }
+            List<String> timeList = new ArrayList<>(timeSet);
+            timeList.sort(Comparator.reverseOrder());
+            for (int i=0; i<2; i++){
+                List<GetLatestConnectionsDto> temp = new ArrayList<>();
+                for (PagingViewUserDto pagingViewUserDto : pagingViewUserDtoList) {
+                    if (Objects.equals(pagingViewUserDto.getTime(), timeList.get(i))) {
+                        GetLatestConnectionsDto getLatestConnectionsDto = new GetLatestConnectionsDto();
+                        getLatestConnectionsDto.setAge(pagingViewUserDto.getAge());
+                        getLatestConnectionsDto.setName(pagingViewUserDto.getName());
+                        getLatestConnectionsDto.setProfileUrl(pagingViewUserDto.getProfileUrl());
+                        temp.add(getLatestConnectionsDto);
+                    }
+                    if (temp.size() == 4) {
+                        break;
+                    }
+                }
+                getLatestConnections.put(timeList.get(i).substring(5), temp);
+            }
+        }
+        return getLatestConnections;
     }
 
     /**
@@ -135,8 +185,14 @@ public class MyPageController {
      * 신청 받은 리스트 수
      * */
     @GetMapping("/connection/count")
-    public Integer getConnectionCount(@PathVariable Long userId){
-        List<List<String>> connectionList = myPageService.getConnectionList(userId);
+    public Integer getConnectionCount(){
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = ((UserDetails) principal).getUsername();
+
+        UserDetails loginUser = userService.loadUserByUsername(username);
+        User user = (User) loginUser;
+
+        List<Connection> connectionList = connectionRepository.findAllByToId(user.getUserId());
         return connectionList.size();
     }
 
@@ -144,8 +200,14 @@ public class MyPageController {
      * 신청 보낸 리스트 수
      * */
     @GetMapping("/propose/count")
-    public Integer getProposeCount(@PathVariable Long userId){
-        List<List<String>> connectionList = myPageService.getProposeList(userId);
+    public Integer getProposeCount(){
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = ((UserDetails) principal).getUsername();
+
+        UserDetails loginUser = userService.loadUserByUsername(username);
+        User user = (User) loginUser;
+
+        List<Connection> connectionList = connectionRepository.findAllByFromId(user.getUserId());
         return connectionList.size();
     }
 
