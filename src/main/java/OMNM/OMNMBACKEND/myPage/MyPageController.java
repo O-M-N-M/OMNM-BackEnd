@@ -179,8 +179,56 @@ public class MyPageController {
      * 신청 보낸 리스트
      * */
     @GetMapping("/propose")
-    public List<List<String>> getProposeList(@PathVariable Long userId){
-        return myPageService.getProposeList(userId);
+    public HashMap<String, List<GetLatestConnectionsDto>> getPropose(){
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = ((UserDetails) principal).getUsername();
+
+        UserDetails loginUser = userService.loadUserByUsername(username);
+        User user = (User) loginUser;
+
+        List<PagingViewUserDto> pagingViewUserDtoList = new ArrayList<>();
+        List<Connection> connectionList = connectionRepository.findAllByFromId(user.getUserId());
+
+        Set<String> timeSet = new HashSet<>();
+        HashMap<String, List<GetLatestConnectionsDto>> getLatestConnections = new HashMap<>();
+
+        if (connectionList.size() == 0){
+            return null;
+        }
+        else{
+            for (Connection connection : connectionList) {
+                PagingViewUserDto pagingViewUserDto = new PagingViewUserDto(); //프로필 사진, 이름, 나이, 시간
+                User connectionUser = userService.getUserEntityById(connection.getToId());
+                MyPersonality connectionUserMy = myPersonalityService.findMyPersonality(connectionUser.getMyPersonalityId());
+                pagingViewUserDto.setUserId(connectionUser.getUserId());
+                pagingViewUserDto.setAge(connectionUserMy.getAge());
+                pagingViewUserDto.setName(connectionUser.getName());
+                pagingViewUserDto.setProfileUrl(connectionUser.getProfileUrl());
+                pagingViewUserDto.setTime(connection.getCreatedTime());
+                timeSet.add(connection.getCreatedTime());
+                pagingViewUserDtoList.add(pagingViewUserDto);
+            }
+            List<String> timeList = new ArrayList<>(timeSet);
+            timeList.sort(Comparator.reverseOrder());
+            for (int i=0; i<2; i++){
+                List<GetLatestConnectionsDto> temp = new ArrayList<>();
+                for (PagingViewUserDto pagingViewUserDto : pagingViewUserDtoList) {
+                    if (Objects.equals(pagingViewUserDto.getTime(), timeList.get(i))) {
+                        GetLatestConnectionsDto getLatestConnectionsDto = new GetLatestConnectionsDto();
+                        getLatestConnectionsDto.setUserId(pagingViewUserDto.getUserId());
+                        getLatestConnectionsDto.setAge(pagingViewUserDto.getAge());
+                        getLatestConnectionsDto.setName(pagingViewUserDto.getName());
+                        getLatestConnectionsDto.setProfileUrl(pagingViewUserDto.getProfileUrl());
+                        temp.add(getLatestConnectionsDto);
+                    }
+                    if (temp.size() == 4) {
+                        break;
+                    }
+                }
+                getLatestConnections.put(timeList.get(i).substring(5), temp);
+            }
+        }
+        return getLatestConnections;
     }
 
     /**
