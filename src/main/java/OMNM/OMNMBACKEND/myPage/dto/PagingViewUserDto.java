@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
  * */
 @Getter @Setter
 public class PagingViewUserDto {
+    private Long userId;
     private String profileUrl;
     private String name;
     private Integer age;
