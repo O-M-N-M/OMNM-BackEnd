@@ -24,7 +24,7 @@ public class MainService {
             Connection connection = new Connection();
             connection.setFromId(userId);
             connection.setToId(matchingId);
-            String time = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            String time = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")); //MM.dd
             System.out.println(time);
             connection.setCreatedTime(time);
             connectionRepository.save(connection);
