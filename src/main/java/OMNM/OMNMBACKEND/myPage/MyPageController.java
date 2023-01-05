@@ -120,7 +120,7 @@ public class MyPageController {
     }
 
     /**
-     * 신청 받은 리스트
+     * 메인 - 신청 받은 리스트 2단
      * */
     @GetMapping("/connection")
     public HashMap<String, List<GetLatestConnectionsDto>> getConnection(){
@@ -154,10 +154,29 @@ public class MyPageController {
             }
             List<String> timeList = new ArrayList<>(timeSet);
             timeList.sort(Comparator.reverseOrder());
-            for (int i=0; i<2; i++){
+            if(timeList.size()>1) {
+                for (int i = 0; i < 2; i++) {
+                    List<GetLatestConnectionsDto> temp = new ArrayList<>();
+                    for (PagingViewUserDto pagingViewUserDto : pagingViewUserDtoList) {
+                        if (Objects.equals(pagingViewUserDto.getTime(), timeList.get(i))) {
+                            GetLatestConnectionsDto getLatestConnectionsDto = new GetLatestConnectionsDto();
+                            getLatestConnectionsDto.setUserId(pagingViewUserDto.getUserId());
+                            getLatestConnectionsDto.setAge(pagingViewUserDto.getAge());
+                            getLatestConnectionsDto.setName(pagingViewUserDto.getName());
+                            getLatestConnectionsDto.setProfileUrl(pagingViewUserDto.getProfileUrl());
+                            temp.add(getLatestConnectionsDto);
+                        }
+                        if (temp.size() == 4) {
+                            break;
+                        }
+                    }
+                    getLatestConnections.put(timeList.get(i).substring(5), temp);
+                }
+            }
+            else{
                 List<GetLatestConnectionsDto> temp = new ArrayList<>();
                 for (PagingViewUserDto pagingViewUserDto : pagingViewUserDtoList) {
-                    if (Objects.equals(pagingViewUserDto.getTime(), timeList.get(i))) {
+                    if (Objects.equals(pagingViewUserDto.getTime(), timeList.get(0))) {
                         GetLatestConnectionsDto getLatestConnectionsDto = new GetLatestConnectionsDto();
                         getLatestConnectionsDto.setUserId(pagingViewUserDto.getUserId());
                         getLatestConnectionsDto.setAge(pagingViewUserDto.getAge());
@@ -169,14 +188,14 @@ public class MyPageController {
                         break;
                     }
                 }
-                getLatestConnections.put(timeList.get(i).substring(5), temp);
+                getLatestConnections.put(timeList.get(0).substring(5), temp);
             }
         }
         return getLatestConnections;
     }
 
     /**
-     * 신청 보낸 리스트
+     * 메인 - 신청 보낸 리스트 2단
      * */
     @GetMapping("/propose")
     public HashMap<String, List<GetLatestConnectionsDto>> getPropose(){
@@ -210,10 +229,29 @@ public class MyPageController {
             }
             List<String> timeList = new ArrayList<>(timeSet);
             timeList.sort(Comparator.reverseOrder());
-            for (int i=0; i<2; i++){
+            if(timeList.size()>1) {
+                for (int i = 0; i < 2; i++) {
+                    List<GetLatestConnectionsDto> temp = new ArrayList<>();
+                    for (PagingViewUserDto pagingViewUserDto : pagingViewUserDtoList) {
+                        if (Objects.equals(pagingViewUserDto.getTime(), timeList.get(i))) {
+                            GetLatestConnectionsDto getLatestConnectionsDto = new GetLatestConnectionsDto();
+                            getLatestConnectionsDto.setUserId(pagingViewUserDto.getUserId());
+                            getLatestConnectionsDto.setAge(pagingViewUserDto.getAge());
+                            getLatestConnectionsDto.setName(pagingViewUserDto.getName());
+                            getLatestConnectionsDto.setProfileUrl(pagingViewUserDto.getProfileUrl());
+                            temp.add(getLatestConnectionsDto);
+                        }
+                        if (temp.size() == 4) {
+                            break;
+                        }
+                    }
+                    getLatestConnections.put(timeList.get(i).substring(5), temp);
+                }
+            }
+            else {
                 List<GetLatestConnectionsDto> temp = new ArrayList<>();
                 for (PagingViewUserDto pagingViewUserDto : pagingViewUserDtoList) {
-                    if (Objects.equals(pagingViewUserDto.getTime(), timeList.get(i))) {
+                    if (Objects.equals(pagingViewUserDto.getTime(), timeList.get(0))) {
                         GetLatestConnectionsDto getLatestConnectionsDto = new GetLatestConnectionsDto();
                         getLatestConnectionsDto.setUserId(pagingViewUserDto.getUserId());
                         getLatestConnectionsDto.setAge(pagingViewUserDto.getAge());
@@ -225,7 +263,7 @@ public class MyPageController {
                         break;
                     }
                 }
-                getLatestConnections.put(timeList.get(i).substring(5), temp);
+                getLatestConnections.put(timeList.get(0).substring(5), temp);
             }
         }
         return getLatestConnections;
