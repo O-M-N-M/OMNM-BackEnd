@@ -8,6 +8,8 @@ import OMNM.OMNMBACKEND.myPage.dto.GetLatestConnectionsDto;
 import OMNM.OMNMBACKEND.myPage.dto.ModifyDto;
 import OMNM.OMNMBACKEND.myPage.dto.PagingViewUserDto;
 import OMNM.OMNMBACKEND.myPage.dto.DeleteDto;
+import OMNM.OMNMBACKEND.myPage.dto.DeleteDto;
+import OMNM.OMNMBACKEND.myPage.dto.ModifyDto;
 import OMNM.OMNMBACKEND.myPage.dto.PasswordDto;
 import OMNM.OMNMBACKEND.myPage.dto.ViewUserDto;
 import OMNM.OMNMBACKEND.myPage.service.MyPageService;
