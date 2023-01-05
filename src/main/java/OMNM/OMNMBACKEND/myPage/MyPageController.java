@@ -144,6 +144,7 @@ public class MyPageController {
                 PagingViewUserDto pagingViewUserDto = new PagingViewUserDto(); //프로필 사진, 이름, 나이, 시간
                 User connectionUser = userService.getUserEntityById(connection.getFromId());
                 MyPersonality connectionUserMy = myPersonalityService.findMyPersonality(connectionUser.getMyPersonalityId());
+                pagingViewUserDto.setUserId(connectionUser.getUserId());
                 pagingViewUserDto.setAge(connectionUserMy.getAge());
                 pagingViewUserDto.setName(connectionUser.getName());
                 pagingViewUserDto.setProfileUrl(connectionUser.getProfileUrl());
@@ -158,6 +159,7 @@ public class MyPageController {
                 for (PagingViewUserDto pagingViewUserDto : pagingViewUserDtoList) {
                     if (Objects.equals(pagingViewUserDto.getTime(), timeList.get(i))) {
                         GetLatestConnectionsDto getLatestConnectionsDto = new GetLatestConnectionsDto();
+                        getLatestConnectionsDto.setUserId(pagingViewUserDto.getUserId());
                         getLatestConnectionsDto.setAge(pagingViewUserDto.getAge());
                         getLatestConnectionsDto.setName(pagingViewUserDto.getName());
                         getLatestConnectionsDto.setProfileUrl(pagingViewUserDto.getProfileUrl());
