@@ -100,15 +100,19 @@ public class MyPageService {
         return null;
     }
 
-    public void changeMatchingStatus(Long userId){
+    public Integer changeMatchingStatus(Long userId){
         Optional<User> user = userRepository.findById(userId);
         if(user.isPresent()){
             if (user.get().getIsMatched() == 0){
                 user.get().setIsMatched(1);
+                return 1;
             }
             else{
                 user.get().setIsMatched(0);
+                return 0;
             }
+        }else{
+            return null;
         }
     }
 

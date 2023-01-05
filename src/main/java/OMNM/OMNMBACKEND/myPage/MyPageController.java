@@ -4,14 +4,8 @@ import OMNM.OMNMBACKEND.blackList.domain.BlackList;
 import OMNM.OMNMBACKEND.blackList.repository.BlackListRepository;
 import OMNM.OMNMBACKEND.connection.domain.Connection;
 import OMNM.OMNMBACKEND.connection.repository.ConnectionRepository;
-import OMNM.OMNMBACKEND.myPage.dto.GetLatestConnectionsDto;
-import OMNM.OMNMBACKEND.myPage.dto.ModifyDto;
-import OMNM.OMNMBACKEND.myPage.dto.PagingViewUserDto;
-import OMNM.OMNMBACKEND.myPage.dto.DeleteDto;
-import OMNM.OMNMBACKEND.myPage.dto.DeleteDto;
-import OMNM.OMNMBACKEND.myPage.dto.ModifyDto;
-import OMNM.OMNMBACKEND.myPage.dto.PasswordDto;
-import OMNM.OMNMBACKEND.myPage.dto.ViewUserDto;
+import OMNM.OMNMBACKEND.connection.repository.ViewConnectionRepository;
+import OMNM.OMNMBACKEND.myPage.dto.*;
 import OMNM.OMNMBACKEND.myPage.service.MyPageService;
 import OMNM.OMNMBACKEND.myPersonality.domain.MyPersonality;
 import OMNM.OMNMBACKEND.myPersonality.service.MyPersonalityService;
@@ -20,6 +14,8 @@ import OMNM.OMNMBACKEND.user.domain.User;
 import OMNM.OMNMBACKEND.user.service.UserService;
 import OMNM.OMNMBACKEND.utils.JwtTokenService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -58,6 +54,7 @@ public class MyPageController {
     private final ConnectionRepository connectionRepository;
     private final UserService userService;
     private final MyPersonalityService myPersonalityService;
+    private final ViewConnectionRepository viewConnectionRepository;
 
     /**
      * 회원탈퇴
@@ -115,8 +112,16 @@ public class MyPageController {
      * */
     @PatchMapping("/matching")
     public ResponseEntity<String> getMatching(@PathVariable Long userId){
-        myPageService.changeMatchingStatus(userId);
-        return new ResponseEntity<>("매칭 상태가 변경되었습니다.", HttpStatus.OK);
+        Integer status = myPageService.changeMatchingStatus(userId);
+        if(status == 1){
+            return new ResponseEntity<>("룸메이트 매칭 완료", HttpStatus.OK);
+        }
+        else if(status == 0){
+            return new ResponseEntity<>("룸메이트 구하는 중", HttpStatus.OK);
+        }
+        else{
+            return new ResponseEntity<>("없는 유저", HttpStatus.OK);
+        }
     }
 
     /**
@@ -297,6 +302,92 @@ public class MyPageController {
 
         List<Connection> connectionList = connectionRepository.findAllByFromId(user.getUserId());
         return connectionList.size();
+    }
+
+    /**
+     * 더보기 - 신청 받은 리스트
+     * */
+    @GetMapping("/connection/detail")
+    public List<ViewConnectionUserDto> getConnectionDetails(Pageable pageable){
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = ((UserDetails) principal).getUsername();
+
+        UserDetails loginUser = userService.loadUserByUsername(username);
+        User user = (User) loginUser;
+
+        List<ViewConnectionUserDto> allPagingViewUserList = new ArrayList<>();
+
+        Page<Connection> connections = viewConnectionRepository.findAllByToIdOrderByConnectionIdDesc(user.getUserId(), pageable);
+
+        List<Connection> content = connections.getContent();
+        boolean isLast = connections.isLast();
+
+        ViewConnectionUserDto viewConnectionUserDto = new ViewConnectionUserDto();
+
+        if (content.size() == 0){
+            return null;
+        }
+        else{
+            for (Connection connection : content){
+                User connectionUser = userService.getUserEntityById(connection.getFromId());
+                MyPersonality connectionUserMy = myPersonalityService.findMyPersonality(connectionUser.getMyPersonalityId());
+
+                viewConnectionUserDto.setUserId(connectionUser.getUserId());
+                viewConnectionUserDto.setProfileUrl(connectionUser.getProfileUrl());
+                viewConnectionUserDto.setName(connectionUser.getName());
+                viewConnectionUserDto.setAge(connectionUserMy.getAge());
+                viewConnectionUserDto.setTime(connection.getCreatedTime());
+                viewConnectionUserDto.setMbti(connectionUserMy.getMbti());
+                viewConnectionUserDto.setLast(isLast);
+
+                allPagingViewUserList.add(viewConnectionUserDto);
+                viewConnectionUserDto = new ViewConnectionUserDto();
+            }
+        }
+        return allPagingViewUserList;
+    }
+
+    /**
+     * 더보기 - 신청 보낸 리스트
+     * */
+    @GetMapping("/propose/detail")
+    public List<ViewConnectionUserDto> getProposeDetails(Pageable pageable){
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = ((UserDetails) principal).getUsername();
+
+        UserDetails loginUser = userService.loadUserByUsername(username);
+        User user = (User) loginUser;
+
+        List<ViewConnectionUserDto> allPagingViewUserList = new ArrayList<>();
+
+        Page<Connection> connections = viewConnectionRepository.findAllByFromIdOrderByConnectionIdDesc(user.getUserId(), pageable);
+
+        List<Connection> content = connections.getContent();
+        boolean isLast = connections.isLast();
+
+        ViewConnectionUserDto viewConnectionUserDto = new ViewConnectionUserDto();
+
+        if (content.size() == 0){
+            return null;
+        }
+        else{
+            for (Connection connection : content){
+                User connectionUser = userService.getUserEntityById(connection.getToId());
+                MyPersonality connectionUserMy = myPersonalityService.findMyPersonality(connectionUser.getMyPersonalityId());
+
+                viewConnectionUserDto.setUserId(connectionUser.getUserId());
+                viewConnectionUserDto.setProfileUrl(connectionUser.getProfileUrl());
+                viewConnectionUserDto.setName(connectionUser.getName());
+                viewConnectionUserDto.setAge(connectionUserMy.getAge());
+                viewConnectionUserDto.setTime(connection.getCreatedTime());
+                viewConnectionUserDto.setMbti(connectionUserMy.getMbti());
+                viewConnectionUserDto.setLast(isLast);
+
+                allPagingViewUserList.add(viewConnectionUserDto);
+                viewConnectionUserDto = new ViewConnectionUserDto();
+            }
+        }
+        return allPagingViewUserList;
     }
 
     /**
