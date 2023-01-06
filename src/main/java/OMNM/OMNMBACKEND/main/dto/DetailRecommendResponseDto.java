@@ -19,4 +19,5 @@ public class DetailRecommendResponseDto {
     private Integer armyService;
     private Integer dormitory;
     private String department;
+    private String kakaoId;
 }

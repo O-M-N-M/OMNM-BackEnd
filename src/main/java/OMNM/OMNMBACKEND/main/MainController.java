@@ -231,6 +231,7 @@ public class MainController {
         detailRecommendResponseDto.setLifeCycle(profileMyPersonality.getLifeCycle());
         detailRecommendResponseDto.setSleepingPattern(profileMyPersonality.getSleepingPattern());
         detailRecommendResponseDto.setIsSmoking(profileMyPersonality.getIsSmoking());
+        detailRecommendResponseDto.setKakaoId(profileUser.getKakaoId());
 
         /**
          * percent 비교 계산에 들어가는 항목
