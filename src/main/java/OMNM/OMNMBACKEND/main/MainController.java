@@ -61,7 +61,7 @@ public class MainController {
      * 11. dto 반환!
      * */
     @PostMapping
-    public List<AllRecommendResponseDto> getRecommendList(Integer criteria){
+    public ResponseEntity<List<AllRecommendResponseDto>> getRecommendList(Integer criteria){
 
         /**
          * 개발 FLOW 1
@@ -69,6 +69,11 @@ public class MainController {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username = ((UserDetails) principal).getUsername();
         User user = userService.getUserEntityByLoginId(username);
+
+        if(user.getIsMatched() == 1){
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+
         Long userId = user.getUserId();
 
         /**
@@ -199,7 +204,7 @@ public class MainController {
         /**
          * 개발 FLOW 11
          * */
-        return allRecommendResponseDtoList;
+        return new ResponseEntity<>(allRecommendResponseDtoList, HttpStatus.OK);
     }
 
     @GetMapping("{userId}")
