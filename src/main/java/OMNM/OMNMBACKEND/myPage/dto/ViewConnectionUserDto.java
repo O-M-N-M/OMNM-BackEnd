@@ -11,5 +11,6 @@ public class ViewConnectionUserDto {
     private Integer age;
     private String time;
     private String mbti;
+    private Integer lifeCycle;
     private boolean isLast;
 }

@@ -338,6 +338,7 @@ public class MyPageController {
                 viewConnectionUserDto.setAge(connectionUserMy.getAge());
                 viewConnectionUserDto.setTime(connection.getCreatedTime());
                 viewConnectionUserDto.setMbti(connectionUserMy.getMbti());
+                viewConnectionUserDto.setLifeCycle(connectionUserMy.getLifeCycle());
                 viewConnectionUserDto.setLast(isLast);
 
                 allPagingViewUserList.add(viewConnectionUserDto);
@@ -381,6 +382,7 @@ public class MyPageController {
                 viewConnectionUserDto.setAge(connectionUserMy.getAge());
                 viewConnectionUserDto.setTime(connection.getCreatedTime());
                 viewConnectionUserDto.setMbti(connectionUserMy.getMbti());
+                viewConnectionUserDto.setLifeCycle(connectionUserMy.getLifeCycle());
                 viewConnectionUserDto.setLast(isLast);
 
                 allPagingViewUserList.add(viewConnectionUserDto);
