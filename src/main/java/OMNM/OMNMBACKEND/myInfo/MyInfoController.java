@@ -35,4 +35,19 @@ public class MyInfoController {
 
         return new ResponseEntity<>(myInfoDto, HttpStatus.OK);
     }
+
+    @GetMapping("/isMatched")
+    public ResponseEntity<Boolean> getIsMatched(){
+
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = ((UserDetails) principal).getUsername();
+        User user = userService.getUserEntityByLoginId(username);
+
+        if(user.getIsMatched() == 1){
+            return new ResponseEntity<>(true, HttpStatus.OK);
+        }
+        else{
+            return new ResponseEntity<>(false, HttpStatus.OK);
+        }
+    }
 }
