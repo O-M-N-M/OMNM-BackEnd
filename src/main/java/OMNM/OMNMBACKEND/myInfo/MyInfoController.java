@@ -50,4 +50,34 @@ public class MyInfoController {
             return new ResponseEntity<>(false, HttpStatus.OK);
         }
     }
+
+    @GetMapping("/isMale")
+    public ResponseEntity<Boolean> getIsMale(){
+
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = ((UserDetails) principal).getUsername();
+        User user = userService.getUserEntityByLoginId(username);
+
+        if(user.getGender() == 1){
+            return new ResponseEntity<>(false, HttpStatus.OK);
+        }
+        else{
+            return new ResponseEntity<>(true, HttpStatus.OK);
+        }
+    }
+
+    @GetMapping("/doneSurvey")
+    public ResponseEntity<Boolean> getDoneSurvey(){
+
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = ((UserDetails) principal).getUsername();
+        User user = userService.getUserEntityByLoginId(username);
+
+        if(user.getMyPersonalityId() == null){
+            return new ResponseEntity<>(false, HttpStatus.OK);
+        }
+        else{
+            return new ResponseEntity<>(true, HttpStatus.OK);
+        }
+    }
 }
