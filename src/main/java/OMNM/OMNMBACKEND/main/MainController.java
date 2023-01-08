@@ -230,7 +230,13 @@ public class MainController {
         detailRecommendResponseDto.setDepartment(profileMyPersonality.getDepartment());
         detailRecommendResponseDto.setMbti(profileMyPersonality.getMbti());
         detailRecommendResponseDto.setAge(profileMyPersonality.getAge());
-        detailRecommendResponseDto.setArmyService(profileMyPersonality.getArmyService());
+
+        if(profileUser.getGender() == 1){
+            detailRecommendResponseDto.setArmyService(null);
+        }
+        else{
+            detailRecommendResponseDto.setArmyService(profileMyPersonality.getArmyService());
+        }
         detailRecommendResponseDto.setNationality(profileMyPersonality.getNationality());
         detailRecommendResponseDto.setIsCleaning(profileMyPersonality.getCleaning());
         detailRecommendResponseDto.setLifeCycle(profileMyPersonality.getLifeCycle());
