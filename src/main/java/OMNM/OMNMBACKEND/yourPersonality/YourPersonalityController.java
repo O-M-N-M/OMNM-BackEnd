@@ -35,18 +35,35 @@ public class YourPersonalityController {
      */
 
     @GetMapping("")
-    public ResponseEntity<YourPersonality> viewYourPersonality(){
+    public ResponseEntity<YourPersonalityDto> viewYourPersonality(){
+
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username = ((UserDetails) principal).getUsername();
         User user = userService.getUserEntityByLoginId(username);
+
         Long yourPersonalityId = user.getYourPersonalityId();
+
         if(yourPersonalityId == null){
             return new ResponseEntity<>(null, HttpStatus.OK);
         }
-        else{
-            YourPersonality yourPersonality = yourPersonalityService.findYourPersonality(yourPersonalityId);
-            return new ResponseEntity<>(yourPersonality, HttpStatus.OK);
+        YourPersonality yourPersonality = yourPersonalityService.findYourPersonality(yourPersonalityId);
+        YourPersonalityDto yourPersonalityDto = new YourPersonalityDto();
+        yourPersonalityDto.setDepartment(yourPersonality.getDepartment());
+        yourPersonalityDto.setAge(yourPersonality.getAge());
+        yourPersonalityDto.setCleaning(yourPersonality.getCleaning());
+        yourPersonalityDto.setMbti(yourPersonality.getMbti());
+        yourPersonalityDto.setIsSmoking(yourPersonality.getIsSmoking());
+        yourPersonalityDto.setNationality(yourPersonality.getNationality());
+        yourPersonalityDto.setLifeCycle(yourPersonality.getLifeCycle());
+
+        if(user.getGender() == 1){
+            yourPersonalityDto.setArmyService(null);
         }
+        else{
+            yourPersonalityDto.setArmyService(yourPersonality.getArmyService());
+        }
+
+        return new ResponseEntity<>(yourPersonalityDto, HttpStatus.OK);
     }
 
     @PostMapping("")
