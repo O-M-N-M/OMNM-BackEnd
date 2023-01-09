@@ -83,14 +83,37 @@ public class MyPersonalityController {
      */
 
     @GetMapping("")
-    public MyPersonality showMyPersonality(){
+    public ResponseEntity<MyPersonalityDto> showMyPersonality(){
+
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username = ((UserDetails) principal).getUsername();
         User user = userService.getUserEntityByLoginId(username);
+
         Long myPersonalityId = user.getMyPersonalityId();
+
         if (myPersonalityId == null){
             return null;
         }
-        return myPersonalityService.findMyPersonality(myPersonalityId);
+        MyPersonality myPersonality = myPersonalityService.findMyPersonality(myPersonalityId);
+        MyPersonalityDto myPersonalityDto = new MyPersonalityDto();
+
+        myPersonalityDto.setAge(myPersonality.getAge());
+        myPersonalityDto.setCleaning(myPersonality.getCleaning());
+        myPersonalityDto.setDepartment(myPersonality.getDepartment());
+        myPersonalityDto.setIntroduction(myPersonality.getIntroduction());
+        myPersonalityDto.setIsSmoking(myPersonality.getIsSmoking());
+        myPersonalityDto.setNationality(myPersonality.getNationality());
+        myPersonalityDto.setLifeCycle(myPersonality.getLifeCycle());
+        myPersonalityDto.setSleepingPattern(myPersonality.getSleepingPattern());
+        myPersonalityDto.setMbti(myPersonality.getMbti());
+
+        if(user.getGender() == 1){
+            myPersonalityDto.setArmyService(null);
+        }
+        else{
+            myPersonalityDto.setArmyService(myPersonality.getArmyService());
+        }
+
+        return new ResponseEntity<>(myPersonalityDto, HttpStatus.OK);
     }
 }
