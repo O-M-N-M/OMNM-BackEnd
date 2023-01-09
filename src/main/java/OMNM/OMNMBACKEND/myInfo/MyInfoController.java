@@ -1,5 +1,7 @@
 package OMNM.OMNMBACKEND.myInfo;
 
+import OMNM.OMNMBACKEND.connection.domain.Connection;
+import OMNM.OMNMBACKEND.connection.repository.ConnectionRepository;
 import OMNM.OMNMBACKEND.myPersonality.dto.MyPersonalityDto;
 import OMNM.OMNMBACKEND.user.domain.User;
 import OMNM.OMNMBACKEND.user.service.UserService;
@@ -9,8 +11,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/myInfo")
@@ -18,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class MyInfoController {
 
     private final UserService userService;
+    private final ConnectionRepository connectionRepository;
 
     @GetMapping("")
     public ResponseEntity<MyInfoDto> getMyInfo(){
@@ -78,6 +84,23 @@ public class MyInfoController {
         }
         else{
             return new ResponseEntity<>(true, HttpStatus.OK);
+        }
+    }
+
+    @GetMapping("/isProposed/{userId}")
+    public ResponseEntity<Boolean> getIsProposed(@PathVariable Long userId){
+
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = ((UserDetails) principal).getUsername();
+        User user = userService.getUserEntityByLoginId(username);
+
+        Optional<Connection> connection = connectionRepository.findByFromIdAndToId(user.getUserId(), userId);
+
+        if(connection.isPresent()){
+            return new ResponseEntity<>(true, HttpStatus.OK);
+        }
+        else{
+            return new ResponseEntity<>(false, HttpStatus.OK);
         }
     }
 }
