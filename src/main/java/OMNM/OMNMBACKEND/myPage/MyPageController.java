@@ -14,6 +14,7 @@ import OMNM.OMNMBACKEND.s3Image.AwsS3Service;
 import OMNM.OMNMBACKEND.user.domain.User;
 import OMNM.OMNMBACKEND.user.service.UserService;
 import OMNM.OMNMBACKEND.utils.JwtTokenService;
+import OMNM.OMNMBACKEND.yourPersonality.repository.YourPersonalityRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -57,6 +58,7 @@ public class MyPageController {
     private final MyPersonalityService myPersonalityService;
     private final ViewConnectionRepository viewConnectionRepository;
     private final MyPersonalityRepository myPersonalityRepository;
+    private final YourPersonalityRepository yourPersonalityRepository;
 
     /**
      * 회원탈퇴
@@ -70,9 +72,27 @@ public class MyPageController {
         String username = ((UserDetails) principal).getUsername();
         User user = userService.getUserEntityByLoginId(username);
 
+        List<Connection> connectionsTo = connectionRepository.findAllByToId(userId);
+        List<Connection> connectionsFrom = connectionRepository.findAllByFromId(userId);
+
         if (user.getLoginId().equals(deleteDto.getLoginId()) && bCryptPasswordEncoder.matches(deleteDto.getPassword(), user.getPassword())){
             myPageService.deleteUserAccount(userId);
-            myPersonalityRepository.deleteById(user.getMyPersonalityId());
+            if(user.getMyPersonalityId() != null){
+                myPersonalityRepository.deleteById(user.getMyPersonalityId());
+            }
+            if(user.getYourPersonalityId() != null){
+                yourPersonalityRepository.deleteById(user.getYourPersonalityId());
+            }
+            if(connectionsTo != null){
+                for (Connection connection : connectionsTo){
+                    connectionRepository.deleteById(connection.getConnectionId());
+                }
+            }
+            if(connectionsFrom != null){
+                for (Connection connection : connectionsFrom){
+                    connectionRepository.deleteById(connection.getConnectionId());
+                }
+            }
             return new ResponseEntity<>("회원 탈퇴 완료", HttpStatus.OK);
         }
         else{
