@@ -8,6 +8,7 @@ import OMNM.OMNMBACKEND.connection.repository.ViewConnectionRepository;
 import OMNM.OMNMBACKEND.myPage.dto.*;
 import OMNM.OMNMBACKEND.myPage.service.MyPageService;
 import OMNM.OMNMBACKEND.myPersonality.domain.MyPersonality;
+import OMNM.OMNMBACKEND.myPersonality.repository.MyPersonalityRepository;
 import OMNM.OMNMBACKEND.myPersonality.service.MyPersonalityService;
 import OMNM.OMNMBACKEND.s3Image.AwsS3Service;
 import OMNM.OMNMBACKEND.user.domain.User;
@@ -55,6 +56,7 @@ public class MyPageController {
     private final UserService userService;
     private final MyPersonalityService myPersonalityService;
     private final ViewConnectionRepository viewConnectionRepository;
+    private final MyPersonalityRepository myPersonalityRepository;
 
     /**
      * 회원탈퇴
@@ -70,6 +72,7 @@ public class MyPageController {
 
         if (user.getLoginId().equals(deleteDto.getLoginId()) && bCryptPasswordEncoder.matches(deleteDto.getPassword(), user.getPassword())){
             myPageService.deleteUserAccount(userId);
+            myPersonalityRepository.deleteById(user.getMyPersonalityId());
             return new ResponseEntity<>("회원 탈퇴 완료", HttpStatus.OK);
         }
         else{
