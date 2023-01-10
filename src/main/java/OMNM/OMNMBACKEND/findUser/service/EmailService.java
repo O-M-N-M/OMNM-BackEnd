@@ -46,8 +46,8 @@ public class EmailService {
         String tempPw = String.valueOf(setTempKey());
 
         emailDto.setAddress(findLoginPwDto.getEmail());
-        emailDto.setTitle("[OMNM] 임시 비밀번호 코드 이메일입니다.");
-        emailDto.setContent("안녕하세요, OMNM 입니다. 임시 비밀번호는 다음과 같습니다." + System.lineSeparator() + tempPw + System.lineSeparator() + "감사합니다.");
+        emailDto.setTitle("[OMNM] 임시 비밀번호 발송 이메일");
+        emailDto.setContent("안녕하세요, OMNM 입니다. 임시 비밀번호는 다음과 같습니다." + System.lineSeparator() + System.lineSeparator() + tempPw + System.lineSeparator() + System.lineSeparator() + "감사합니다.");
 
         findService.findEmailService(findLoginPwDto.getEmail()).get().setPassword(bCryptPasswordEncoder.encode(tempPw));
 
@@ -60,8 +60,8 @@ public class EmailService {
         int validationNumber = random.nextInt(888888) + 111111; // 111111 ~ 999999 까지의 랜덤 인증번호 생성
 
         emailDto.setAddress(email);
-        emailDto.setTitle("[OMNM] 이메일 인증 관련 이메일입니다.");
-        emailDto.setContent("안녕하세요, OMNM 입니다. 이메일 인증 관련 인증번호는 다음과 같습니다." + System.lineSeparator() + validationNumber + System.lineSeparator() + "감사합니다.");
+        emailDto.setTitle("[OMNM] 회원가입 이메일 인증");
+        emailDto.setContent("안녕하세요, OMNM 입니다." + System.lineSeparator()+ "회원가입 인증번호는 다음과 같습니다." + System.lineSeparator() + System.lineSeparator() + validationNumber + System.lineSeparator() + System.lineSeparator()+ "감사합니다.");
 
         // Validation DB에 인증번호 저장
         Optional<Validation> validation = validationRepository.findByEmail(email);
