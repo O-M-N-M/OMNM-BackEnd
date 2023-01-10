@@ -196,7 +196,9 @@ public class MainController {
         }
 
         Collections.shuffle(allRecommendResponseDtoList);
-        allRecommendResponseDtoList = allRecommendResponseDtoList.subList(0,9);
+        if(allRecommendResponseDtoList.size() > 9){
+            allRecommendResponseDtoList = allRecommendResponseDtoList.subList(0,9);
+        }
 
         /**
          * 개발 FLOW 11
