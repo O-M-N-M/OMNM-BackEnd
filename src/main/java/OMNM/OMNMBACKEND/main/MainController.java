@@ -127,7 +127,7 @@ public class MainController {
                     || !userEntity.getDormitory().equals(userDormitory) || userEntity.getUserId().equals(user.getUserId())){
                 continue;
             }
-            MyPersonality myPersonalityEntity = myPersonalityService.findMyPersonality(userEntity.getMyPersonalityId());
+//            MyPersonality myPersonalityEntity = myPersonalityService.findMyPersonality(userEntity.getMyPersonalityId());
 
             if (mateAge.contains(String.valueOf(convertedAge)) || mateAge.equals("{4}")) {    // 나이 조사
                 matchingCount += 1;
@@ -176,13 +176,11 @@ public class MainController {
          * 개발 FLOW 9
          * */
         List<Map.Entry<Long, Integer>> entryList = new LinkedList<>(recommendPercent.entrySet());
-        entryList.sort(((o1, o2) -> recommendPercent.get(o2.getKey()) - recommendPercent.get(o1.getKey())));
 
         /**
          * 개발 FLOW 10
          * */
         List<AllRecommendResponseDto> allRecommendResponseDtoList = new ArrayList<>();
-        int count = 0;
         for(Map.Entry<Long, Integer> entry : entryList){
             User userEntity = userService.getUserEntity(entry.getKey());
             MyPersonality myPersonality = myPersonalityService.findMyPersonality(userEntity.getMyPersonalityId());
@@ -195,11 +193,10 @@ public class MainController {
             allRecommendResponseDto.setPercent((float)((entry.getValue()/8.0)*100));
             allRecommendResponseDto.setMbti(myPersonality.getMbti());
             allRecommendResponseDtoList.add(allRecommendResponseDto);
-            count+=1;
-            if(count == 9){
-                break;
-            }
         }
+
+        Collections.shuffle(allRecommendResponseDtoList);
+        allRecommendResponseDtoList = allRecommendResponseDtoList.subList(0,9);
 
         /**
          * 개발 FLOW 11
