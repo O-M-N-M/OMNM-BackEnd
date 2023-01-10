@@ -213,16 +213,16 @@ public class MainController {
         int percentCount = 0;
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username = ((UserDetails) principal).getUsername();
-        User myUser = userService.getUserEntityByLoginId(username);
-        User profileUser = userService.getUserEntity(userId);
-        MyPersonality profileMyPersonality = myPersonalityService.findMyPersonality(profileUser.getMyPersonalityId());
-        YourPersonality wantedPersonality = yourPersonalityService.findYourPersonality(myUser.getYourPersonalityId());
-        MyPersonality applierPersonality = myPersonalityService.findMyPersonality(myUser.getMyPersonalityId());
+        User myUser = userService.getUserEntityByLoginId(username); // 로그인한 유저
+        User profileUser = userService.getUserEntity(userId); // 탐색하려는 상대 유저
+        MyPersonality profileMyPersonality = myPersonalityService.findMyPersonality(profileUser.getMyPersonalityId()); // 상대 유저의 my설문조사
+        YourPersonality wantedPersonality = yourPersonalityService.findYourPersonality(myUser.getYourPersonalityId()); // 로그인한 유저의 your설문조사
+        MyPersonality applierPersonality = myPersonalityService.findMyPersonality(myUser.getMyPersonalityId()); // 로그인한 유저의 my설문조사
 
         /**
          * myUser의 yourPersonality랑 profileUser의 myPersonality가 얼마나 맞는지 알아야됨
          * */
-
+        // 상대 유저의 정보를 detailRecommendResponseDto 에 담아줌
         DetailRecommendResponseDto detailRecommendResponseDto = new DetailRecommendResponseDto();
         detailRecommendResponseDto.setProfileUrl(profileUser.getProfileUrl());
         detailRecommendResponseDto.setDormitory(profileUser.getDormitory());
@@ -280,7 +280,7 @@ public class MainController {
         if(wantedPersonality.getNationality() == 1 || profileMyPersonality.getNationality()==0){
             percentCount+=1;
         }
-        if(wantedPersonality.getAge().equals("{5}") || wantedPersonality.getAge().contains(String.valueOf(mainService.ageConverter(profileMyPersonality.getAge())))){
+        if(wantedPersonality.getAge().equals("{4}") || wantedPersonality.getAge().contains(String.valueOf(mainService.ageConverter(profileMyPersonality.getAge())))){
             percentCount+=1;
         }
         if(wantedPersonality.getArmyService() == 2 || wantedPersonality.getArmyService().equals(profileMyPersonality.getArmyService())){
