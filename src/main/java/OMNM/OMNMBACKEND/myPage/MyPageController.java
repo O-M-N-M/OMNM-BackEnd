@@ -418,27 +418,41 @@ public class MyPageController {
     /**
      * 받은 신청 삭제
      * */
-    @DeleteMapping("/connection/reverse/{matchingId}")
-    public ResponseEntity<String> deleteConnectionReverse(@PathVariable Long matchingId, @PathVariable Long userId){
+    @DeleteMapping("/connection/deleteReceiveMatching")
+    public ResponseEntity<String> deleteConnectionReverse(String deleteList){
+
         /**
-         * matchingId -> userId로 가는 connection 객체 지워야함
+         * 입력값 예시 - {1,3,4,5,6}
          * */
-        Connection connection = myPageService.getConnectionEntity(matchingId, userId);
-        myPageService.deleteConnection(connection);
-        return new ResponseEntity<>("해당 매칭 신청이 삭제되었습니다.", HttpStatus.OK);
+
+        String targetList = deleteList.substring(1,deleteList.length()-1);
+        String[] splitList = targetList.split(",");
+
+        for (String s : splitList) {
+            connectionRepository.deleteById(Long.parseLong(s));
+        }
+
+        return new ResponseEntity<>("해당 신청 리스트가 삭제되었습니다.", HttpStatus.OK);
     }
 
     /**
      * 보낸 신청 삭제
      * */
-    @DeleteMapping("/connection/{matchingId}")
-    public ResponseEntity<String> deleteConnection(@PathVariable Long matchingId, @PathVariable Long userId){
+    @DeleteMapping("/connection/deleteSendingMatching")
+    public ResponseEntity<String> deleteConnection(String deleteList){
+
         /**
-         * matchingId -> userId로 가는 connection 객체 지워야함
+         * 입력값 예시 - {1,3,4,5,6}
          * */
-        Connection connection = myPageService.getConnectionEntity(userId, matchingId);
-        myPageService.deleteConnection(connection);
-        return new ResponseEntity<>("해당 매칭 신청이 삭제되었습니다.", HttpStatus.OK);
+
+        String targetList = deleteList.substring(1,deleteList.length()-1);
+        String[] splitList = targetList.split(",");
+
+        for (String s : splitList) {
+            connectionRepository.deleteById(Long.parseLong(s));
+        }
+
+        return new ResponseEntity<>("해당 신청 리스트가 삭제되었습니다.", HttpStatus.OK);
     }
 
     /**
