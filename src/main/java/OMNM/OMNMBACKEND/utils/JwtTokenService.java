@@ -31,8 +31,7 @@ public class JwtTokenService {
     public String createJWT(String userLoginId){
         Claims claims = Jwts.claims().setSubject(userLoginId);
         Date now = new Date();
-//        long tokenValidTime = 30 * 60 * 1000L;
-        long tokenValidTime = 1 * 60 * 1000L;
+        long tokenValidTime = 30 * 60 * 1000L;
         return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(new Date())
@@ -43,8 +42,7 @@ public class JwtTokenService {
 
     public String createRefreshToken(){
         Date now = new Date();
-//        long refreshTokenValidTime = 30 * 60 * 1000 * 24L;
-        long refreshTokenValidTime = 2 * 60 * 1000L;
+        long refreshTokenValidTime = 30 * 60 * 1000 * 24L;
         return Jwts.builder()
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(now.getTime() + refreshTokenValidTime))
