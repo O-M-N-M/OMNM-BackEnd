@@ -421,15 +421,20 @@ public class MyPageController {
     @PostMapping("/connection/deleteReceiveMatching")
     public ResponseEntity<String> deleteConnectionReverse(String deleteList){
 
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = ((UserDetails) principal).getUsername();
+        User user = userService.getUserEntityByLoginId(username);
+
         /**
-         * 입력값 예시 - {1,3,4,5,6}
+         * 입력값 예시 - {1,3,4,5,6} -> 보낸 사람들의 아이디임
          * */
 
         String targetList = deleteList.substring(1,deleteList.length()-1);
         String[] splitList = targetList.split(",");
 
         for (String s : splitList) {
-            connectionRepository.deleteById(Long.parseLong(s));
+            Optional<Connection> matching = connectionRepository.findByFromIdAndToId(Long.parseLong(s), user.getUserId());
+            matching.ifPresent(connectionRepository::delete);
         }
 
         return new ResponseEntity<>("해당 신청 리스트가 삭제되었습니다.", HttpStatus.OK);
@@ -441,15 +446,20 @@ public class MyPageController {
     @PostMapping("/connection/deleteSendingMatching")
     public ResponseEntity<String> deleteConnection(String deleteList){
 
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = ((UserDetails) principal).getUsername();
+        User user = userService.getUserEntityByLoginId(username);
+
         /**
-         * 입력값 예시 - {1,3,4,5,6}
+         * 입력값 예시 - {1,3,4,5,6} -> 보낸 사람들의 아이디임
          * */
 
         String targetList = deleteList.substring(1,deleteList.length()-1);
         String[] splitList = targetList.split(",");
 
         for (String s : splitList) {
-            connectionRepository.deleteById(Long.parseLong(s));
+            Optional<Connection> matching = connectionRepository.findByFromIdAndToId(user.getUserId(), Long.parseLong(s));
+            matching.ifPresent(connectionRepository::delete);
         }
 
         return new ResponseEntity<>("해당 신청 리스트가 삭제되었습니다.", HttpStatus.OK);
