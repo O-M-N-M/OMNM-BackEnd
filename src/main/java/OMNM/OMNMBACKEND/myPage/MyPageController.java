@@ -418,7 +418,7 @@ public class MyPageController {
     /**
      * 받은 신청 삭제
      * */
-    @DeleteMapping("/connection/deleteReceiveMatching")
+    @PostMapping("/connection/deleteReceiveMatching")
     public ResponseEntity<String> deleteConnectionReverse(String deleteList){
 
         /**
@@ -438,7 +438,7 @@ public class MyPageController {
     /**
      * 보낸 신청 삭제
      * */
-    @DeleteMapping("/connection/deleteSendingMatching")
+    @PostMapping("/connection/deleteSendingMatching")
     public ResponseEntity<String> deleteConnection(String deleteList){
 
         /**
