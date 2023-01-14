@@ -42,7 +42,7 @@ public class JwtTokenService {
 
     public String createRefreshToken(){
         Date now = new Date();
-        long refreshTokenValidTime = 30 * 60 * 1000 * 24L;
+        long refreshTokenValidTime = 30 * 60 * 1000 * 2L;
         return Jwts.builder()
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(now.getTime() + refreshTokenValidTime))
