@@ -16,7 +16,7 @@ public class HomeService {
     private final UserRepository userRepository;
 
     public Integer getMemberCount(){
-        return userRepository.findAllByStatus(1).size();
+        return userRepository.findAll().size();
     }
 
     public Integer getMatchedCount(){
