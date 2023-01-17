@@ -495,6 +495,7 @@ public class MyPageController {
         else{
             user.setProfileUrl(originalProfileUrl);
         }
+        user.setName(modifyDto.getName());
         user.setDormitory(modifyDto.getDormitory());
         user.setKakaoId(modifyDto.getKakaoId());
         userService.saveUser(user);
