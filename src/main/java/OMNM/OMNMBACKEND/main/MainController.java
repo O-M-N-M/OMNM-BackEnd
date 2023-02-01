@@ -1,6 +1,7 @@
 package OMNM.OMNMBACKEND.main;
 
 import OMNM.OMNMBACKEND.main.dto.AllRecommendResponseDto;
+import OMNM.OMNMBACKEND.main.dto.ConnectionDto;
 import OMNM.OMNMBACKEND.main.dto.DetailRecommendResponseDto;
 import OMNM.OMNMBACKEND.main.service.MainService;
 import OMNM.OMNMBACKEND.myPersonality.domain.MyPersonality;
@@ -31,13 +32,14 @@ public class MainController {
     private final MyPersonalityService myPersonalityService;
 
     @PostMapping("/propose/{matchingId}")
-    public ResponseEntity<String> proposeRoomMate(@PathVariable Long matchingId){
+    public ResponseEntity<String> proposeRoomMate(@PathVariable Long matchingId, ConnectionDto connectionDto){
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username = ((UserDetails) principal).getUsername();
         User user = userService.getUserEntityByLoginId(username);
         Long userId = user.getUserId();
+        String message = connectionDto.getMessage();
 
-        if (mainService.isProposedPerson(userId, matchingId)){
+        if (mainService.isProposedPerson(userId, matchingId, message)){
             return new ResponseEntity<>("이미 신청한 사람입니다.", HttpStatus.OK);
         }
         else{

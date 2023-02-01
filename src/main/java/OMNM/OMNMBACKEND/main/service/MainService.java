@@ -16,7 +16,7 @@ public class MainService {
 
     private final ConnectionRepository connectionRepository;
 
-    public boolean isProposedPerson(Long userId, Long matchingId){
+    public boolean isProposedPerson(Long userId, Long matchingId, String message){
         if(connectionRepository.findByFromIdAndToId(userId, matchingId).isPresent()){
             return true;
         }
@@ -25,8 +25,8 @@ public class MainService {
             connection.setFromId(userId);
             connection.setToId(matchingId);
             String time = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")); //MM.dd
-            System.out.println(time);
             connection.setCreatedTime(time);
+            connection.setMessage(message);
             connectionRepository.save(connection);
             return false;
         }
