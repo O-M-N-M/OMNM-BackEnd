@@ -7,7 +7,7 @@ import org.springframework.security.web.firewall.HttpFirewall;
 import org.springframework.security.web.firewall.StrictHttpFirewall;
 
 @SpringBootApplication
-//12
+//1
 public class OmnmBackendApplication {
 
 	public static void main(String[] args) {
