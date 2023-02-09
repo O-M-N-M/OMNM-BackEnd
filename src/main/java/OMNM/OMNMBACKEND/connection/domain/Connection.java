@@ -21,6 +21,9 @@ public class Connection {
     @Column(name = "to_Id")
     private Long toId;
 
+    @Column(name = "message")
+    private String message;
+
     @Column(name = "created_time")
     private String createdTime;
 }

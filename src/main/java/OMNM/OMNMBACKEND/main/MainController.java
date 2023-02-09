@@ -1,6 +1,9 @@
 package OMNM.OMNMBACKEND.main;
 
+import OMNM.OMNMBACKEND.connection.domain.Connection;
+import OMNM.OMNMBACKEND.connection.repository.ConnectionRepository;
 import OMNM.OMNMBACKEND.main.dto.AllRecommendResponseDto;
+import OMNM.OMNMBACKEND.main.dto.ConnectionDto;
 import OMNM.OMNMBACKEND.main.dto.DetailRecommendResponseDto;
 import OMNM.OMNMBACKEND.main.service.MainService;
 import OMNM.OMNMBACKEND.myPersonality.domain.MyPersonality;
@@ -29,15 +32,17 @@ public class MainController {
     private final YourPersonalityService yourPersonalityService;
     private final MyPersonalityRepository myPersonalityRepository;
     private final MyPersonalityService myPersonalityService;
+    private final ConnectionRepository connectionRepository;
 
     @PostMapping("/propose/{matchingId}")
-    public ResponseEntity<String> proposeRoomMate(@PathVariable Long matchingId){
+    public ResponseEntity<String> proposeRoomMate(@PathVariable Long matchingId, ConnectionDto connectionDto){
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username = ((UserDetails) principal).getUsername();
         User user = userService.getUserEntityByLoginId(username);
         Long userId = user.getUserId();
+        String message = connectionDto.getMessage();
 
-        if (mainService.isProposedPerson(userId, matchingId)){
+        if (mainService.isProposedPerson(userId, matchingId, message)){
             return new ResponseEntity<>("이미 신청한 사람입니다.", HttpStatus.OK);
         }
         else{
@@ -210,6 +215,7 @@ public class MainController {
     public ResponseEntity<DetailRecommendResponseDto> getUserDetailProfile(@PathVariable Long userId){
 
         int percentCount = 0;
+        String message = "";
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username = ((UserDetails) principal).getUsername();
         User myUser = userService.getUserEntityByLoginId(username); // 로그인한 유저
@@ -217,7 +223,10 @@ public class MainController {
         MyPersonality profileMyPersonality = myPersonalityService.findMyPersonality(profileUser.getMyPersonalityId()); // 상대 유저의 my설문조사
         YourPersonality wantedPersonality = yourPersonalityService.findYourPersonality(myUser.getYourPersonalityId()); // 로그인한 유저의 your설문조사
         MyPersonality applierPersonality = myPersonalityService.findMyPersonality(myUser.getMyPersonalityId()); // 로그인한 유저의 my설문조사
-
+        Optional<Connection> connection = connectionRepository.findByFromIdAndToId(myUser.getUserId(), userId);
+        if(connection.isPresent()){
+         message = connection.get().getMessage();
+        }
         /**
          * myUser의 yourPersonality랑 profileUser의 myPersonality가 얼마나 맞는지 알아야됨
          * */
@@ -229,6 +238,7 @@ public class MainController {
         detailRecommendResponseDto.setDepartment(profileMyPersonality.getDepartment());
         detailRecommendResponseDto.setMbti(profileMyPersonality.getMbti());
         detailRecommendResponseDto.setAge(profileMyPersonality.getAge());
+        detailRecommendResponseDto.setMessage(message);
 
         if(profileUser.getGender() == 1){
             detailRecommendResponseDto.setArmyService(null);
