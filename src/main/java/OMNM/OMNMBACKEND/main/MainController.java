@@ -223,7 +223,7 @@ public class MainController {
         MyPersonality profileMyPersonality = myPersonalityService.findMyPersonality(profileUser.getMyPersonalityId()); // 상대 유저의 my설문조사
         YourPersonality wantedPersonality = yourPersonalityService.findYourPersonality(myUser.getYourPersonalityId()); // 로그인한 유저의 your설문조사
         MyPersonality applierPersonality = myPersonalityService.findMyPersonality(myUser.getMyPersonalityId()); // 로그인한 유저의 my설문조사
-        Optional<Connection> connection = connectionRepository.findByFromIdAndToId(myUser.getUserId(), userId);
+        Optional<Connection> connection = connectionRepository.findByFromIdAndToId(userId, myUser.getUserId());
         if(connection.isPresent()){
          message = connection.get().getMessage();
         }
